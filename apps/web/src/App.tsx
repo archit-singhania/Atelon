@@ -9,11 +9,14 @@ import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Suggest from './pages/Suggest';
+import DesignQA from './pages/DesignQA';
+import ThemeToggle from './components/ThemeToggle';
 
 export default function App() {
   return (
     <>
-      <header className="nav">
+      <header className="nav-wrap">
+        <div className="nav glass-panel">
         <Link to="/" className="brand">ATELON</Link>
         <nav>
           <NavLink to="/garage">Garage</NavLink>
@@ -22,6 +25,8 @@ export default function App() {
           <NavLink to="/credits">Credits</NavLink>
           <NavLink to="/about">About</NavLink>
         </nav>
+        <ThemeToggle />
+        </div>
       </header>
       <main>
         <Routes>
@@ -35,6 +40,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/suggest" element={<Suggest />} />
+          <Route path="/design-system" element={<DesignQA />} />
           <Route path="*" element={<div className="page"><h1>Not found</h1><Link to="/garage">Back to the Garage</Link></div>} />
         </Routes>
       </main>

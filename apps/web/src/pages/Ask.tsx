@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ask } from '../lib/data';
 
-interface Reply { answer: string; provider: string; sources: string[] }
+interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean }
 
 export default function Ask() {
   const [q, setQ] = useState('');
@@ -38,6 +38,7 @@ export default function Ask() {
       {reply && (
         <div className="bubble">
           {reply.answer}
+          <p className="muted" style={{ fontSize: 12 }}>{reply.fallback ? 'Deterministic fallback' : `Answered by ${reply.provider}`}{reply.matchedVehicles.length ? ` · ${reply.matchedVehicles.join(', ')}` : ''}</p>
           {reply.sources.length > 0 && (
             <p className="muted" style={{ fontSize: 12 }}>
               Sources: {reply.sources.map((s, i) => <a key={s} href={s} target="_blank" rel="noreferrer">[{i + 1}] </a>)}

@@ -1,29 +1,32 @@
-# Atelon Style Guide (draft v0.1)
+# Atelon Liquid Glass Style Guide (v0.2)
 
 Tagline candidates: "Atelon, every machine in 3D" / "Atelon, the AI vehicle atlas". Headline used on the landing page: "Every machine. In 3D."
 
-## Look
-Dark showroom. Near-black background, glass cards, subtle grain, one neon accent.
+## Direction
+Adaptive premium showroom. Dark mode uses obsidian and smoked glass; light mode uses pearl and titanium. Both use restrained ice-blue spectral highlights, layered translucency, inner highlights and depth-dependent shadows.
 
 ## Tokens (implemented in `apps/web/src/styles.css`)
 | Token | Value |
 |---|---|
-| --bg | #07090d |
-| --surface | #0f141b |
-| --border | rgba(255,255,255,0.08) |
-| --text | #e8edf3 |
-| --muted | #8a97a8 |
-| --accent | #22d3ee (cyan; swap to #ff6a1a for racing orange) |
+| --canvas | Theme background |
+| --canvas-elevated | Solid fallback surface |
+| --glass-fill / --glass-fill-strong | Translucent material layers |
+| --glass-border / --glass-highlight | Hairline edge and internal reflection |
+| --text-primary / --text-secondary | Accessible typography |
+| --accent / --accent-glow | Restrained ice-blue emphasis |
+| --shadow-glass / --blur-glass | Depth and material blur |
 
-## Fonts (Google Fonts)
-- Display: Space Grotesk
-- Body: Inter
+## Typography
+- Manrope variable family for display, body and automotive numerals.
+- System sans fallbacks keep the interface usable while the web font loads.
 
 ## Components
 - Buttons: pill, accent fill for primary, outlined for secondary.
-- Cards: glass (translucent surface, 1px border, 16px radius), tilt on hover.
+- Cards: layered glass with spectral edge, 22px radius, hover lift and pointer tilt.
 - Tier badges: Full 3D (accent), Reference 3D (amber), Specs only (grey).
 - Respect `prefers-reduced-motion`.
+- Respect `prefers-reduced-transparency` and provide a solid-surface fallback.
+- Internal component gallery: `/design-system`.
 
 ## To do (needs you)
 - Figma sketch of the landing page.

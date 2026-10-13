@@ -1,1 +1,31 @@
 make,model,generation,years,type,category,3d_source_url,license,status
+Tata,Nexon,Gen 2,2023-present,car,indian-market,,,candidate
+Mahindra,Thar,2nd generation,2020-present,car,indian-market,,,candidate
+Maruti Suzuki,Swift,4th generation,2024-present,car,indian-market,,,candidate
+Hyundai,Creta,2nd generation facelift,2024-present,car,indian-market,,,candidate
+Kia,Seltos,1st generation facelift,2023-present,car,indian-market,,,candidate
+Tata,Harrier,1st generation facelift,2023-present,car,indian-market,,,candidate
+Mahindra,Scorpio-N,1st generation,2022-present,car,indian-market,,,candidate
+Honda,City,5th generation,2020-present,car,indian-market,,,candidate
+Toyota,Fortuner,2nd generation facelift,2021-present,car,indian-market,,,candidate
+Maruti Suzuki,Jimny,5-door,2023-present,car,indian-market,,,candidate
+Porsche,911,992,2019-present,car,global-icon,,,candidate
+BMW,M3,G80,2020-present,car,global-icon,,,candidate
+Mercedes-Benz,G-Class,W463 second generation,2018-present,car,global-icon,,,candidate
+Nissan,GT-R,R35,2007-2025,car,global-icon,,,candidate
+Toyota,Land Cruiser,J300,2021-present,car,global-icon,,,candidate
+Ford,Mustang,7th generation,2023-present,car,global-icon,,,candidate
+Chevrolet,Corvette,C8,2020-present,car,global-icon,,,candidate
+Audi,R8,Type 4S,2015-2024,car,global-icon,,,candidate
+Volkswagen,Beetle,Type 1,1938-2003,car,classic,,,candidate
+Porsche,911,964,1989-1994,car,classic,,,candidate
+Jaguar,E-Type,Series 1,1961-1968,car,classic,,,candidate
+Mercedes-Benz,300 SL,W198,1954-1963,car,classic,,,candidate
+Ford,Mustang,1st generation,1964-1973,car,classic,,,candidate
+Lamborghini,Countach,LP400,1974-1978,car,classic,,,candidate
+Royal Enfield,Classic 350,J platform,2021-present,motorcycle,retro-bike,,,researching
+Honda,Activa 6G,6th generation,2020-present,motorcycle,scooter,,,candidate
+TVS,Apache RR 310,1st generation,2017-present,motorcycle,sport-bike,,,candidate
+KTM,390 Adventure,2nd generation,2025-present,motorcycle,adventure-bike,,,candidate
+Triumph,Speed 400,1st generation,2023-present,motorcycle,retro-bike,,,candidate
+Yamaha,YZF-R1,RN65,2020-present,motorcycle,sport-bike,,,candidate

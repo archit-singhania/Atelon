@@ -1,7 +1,7 @@
-import { vehicles } from '../lib/data';
+import credits from '../data/credits.json';
 
 export default function Credits() {
-  const credited = vehicles.filter((v) => v.model3d?.credit);
+  const credited = credits as Array<{ vehicle_slug: string; source_url: string; creator: string; license: string; attribution_line: string }>;
   return (
     <div className="page">
       <h1>Credits and licences</h1>
@@ -11,8 +11,8 @@ export default function Credits() {
       ) : (
         <table>
           <tbody>
-            {credited.map((v) => (
-              <tr key={v.slug}><th>{v.make} {v.model}</th><td>{v.model3d!.credit}</td></tr>
+            {credited.map((row) => (
+              <tr key={row.vehicle_slug}><th>{row.vehicle_slug.replaceAll('-', ' ')}</th><td><a href={row.source_url} target="_blank" rel="noreferrer">{row.attribution_line}</a></td></tr>
             ))}
           </tbody>
         </table>

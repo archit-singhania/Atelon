@@ -11,3 +11,4 @@ android/app/release/
 Thumbs.db
 # generated
 apps/web/src/data/vehicles.json
+apps/web/src/data/credits.json

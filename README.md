@@ -3,6 +3,8 @@
 Every machine. In 3D. An AI vehicle atlas for cars and motorcycles.
 
 ## Quick start
+Verified locally on Node 24.20.0 and npm 11.19.0 (13 October 2026). Use an active Node LTS release.
+
 ```
 npm install
 npm run validate        # check data/vehicles and data/ledger.csv
@@ -24,3 +26,5 @@ npm run dev:web         # http://localhost:5173
   (The plan said `npm ci`, but there is no lockfile inside `apps/api` with a workspaces repo, so `npm install` is safer.)
 
 Status and checklist: `docs/PROGRESS.md`. License rules: `docs/license-policy.md`.
+
+The internal liquid-glass component gallery is available at `/design-system` in local and preview builds.

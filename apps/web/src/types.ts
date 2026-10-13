@@ -1,4 +1,5 @@
 export type Tier = 'full' | 'reference' | 'specs-only';
+export type VehicleStatus = 'draft' | 'researching' | 'license-review' | 'asset-processing' | 'qa' | 'live' | 'rejected';
 
 export interface Spec {
   key: string;
@@ -9,7 +10,7 @@ export interface Spec {
 
 export interface Vehicle {
   slug: string;
-  status: 'draft' | 'live';
+  status: VehicleStatus;
   make: string;
   model: string;
   generation?: string;
@@ -18,7 +19,20 @@ export interface Vehicle {
   tier: Tier;
   summary: string;
   specs: Spec[];
-  model3d?: { glb: string; credit: string };
+  model3d?: {
+    glb: string;
+    credit: string;
+    license?: 'CC0' | 'CC BY 4.0' | 'CC BY 3.0' | 'written-permission';
+    sourceUrl?: string;
+    licenseEvidence?: string;
+    verifiedAt?: string;
+    originalHash?: string;
+    optimizedHash?: string;
+    accuracyNotes?: string;
+    triangleCount?: number;
+    fileSizeBytes?: number;
+    reviewer?: string;
+  };
   poster?: string;
 }
 

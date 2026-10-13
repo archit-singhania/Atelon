@@ -19,4 +19,16 @@ const vehicles = all
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'vehicles.json'), JSON.stringify(vehicles));
+const ledgerPath = path.join(root, 'data', 'ledger.csv');
+const credits = [];
+if (fs.existsSync(ledgerPath)) {
+  const rows = fs.readFileSync(ledgerPath, 'utf8').split(/\r?\n/).filter(Boolean);
+  const headers = (rows.shift() || '').split(',');
+  for (const line of rows) {
+    const values = line.split(',');
+    const row = Object.fromEntries(headers.map((header, index) => [header, values[index] || '']));
+    if (row.vehicle_slug && row.attribution_line) credits.push(row);
+  }
+}
+fs.writeFileSync(path.join(outDir, 'credits.json'), JSON.stringify(credits));
 console.log(`Wrote ${vehicles.length} vehicle(s)${live ? ' (live only)' : ' (drafts included)'}.`);

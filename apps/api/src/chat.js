@@ -53,7 +53,7 @@ export async function answerQuestion({ vehicles, chain, question, log }) {
   const matches = findForQuestion(vehicles, question);
   const sources = [...new Set(matches.flatMap((v) => v.specs.map((s) => s.source)))];
 
-  if (!matches.length) return { answer: "I don't have that data. Try naming a make and model from the Garage.", provider: 'none', sources: [] };
+  if (!matches.length) return { answer: "I don't have that data. Try naming a make and model from the Garage.", provider: 'none', sources: [], matchedVehicles: [], fallback: true };
 
   if (chain.length && underDailyCap()) {
     const messages = [
@@ -61,7 +61,7 @@ export async function answerQuestion({ vehicles, chain, question, log }) {
       { role: 'user', content: `DATA:\n${formatContext(matches)}\n\nQUESTION: ${question}` }
     ];
     const r = await askChain(chain, messages, log);
-    if (r) return { answer: r.text, provider: r.provider, sources };
+    if (r) return { answer: r.text, provider: r.provider, sources, matchedVehicles: matches.map((v) => v.slug), fallback: false };
   }
-  return { answer: noAiAnswer(matches), provider: 'no-ai', sources };
+  return { answer: noAiAnswer(matches), provider: 'no-ai', sources, matchedVehicles: matches.map((v) => v.slug), fallback: true };
 }

@@ -5,7 +5,15 @@ import { loadVehicles, search } from './src/data.js';
 import { buildChain } from './src/providers.js';
 import { answerQuestion, MAX_INPUT } from './src/chat.js';
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+  ajv: { customOptions: { coerceTypes: false, removeAdditional: false } },
+  logger: {
+    serializers: {
+      req(request) { return { method: request.method, url: request.url }; },
+      res(reply) { return { statusCode: reply.statusCode }; }
+    }
+  }
+});
 const vehicles = loadVehicles(); // in memory, no database
 const chain = buildChain();
 
@@ -19,12 +27,12 @@ await app.register(rateLimit, { global: false });
 
 app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((p) => p.name) }));
 
-app.get('/api/search', async (req) => {
+app.get('/api/search', { schema: { querystring: { type: 'object', properties: { q: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (req) => {
   const q = String(req.query.q || '').slice(0, 100);
   return { results: search(vehicles, q) };
 });
 
-app.get('/api/compare', async (req, reply) => {
+app.get('/api/compare', { schema: { querystring: { type: 'object', required: ['a', 'b'], properties: { a: { type: 'string', maxLength: 100 }, b: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (req, reply) => {
   const a = vehicles.find((v) => v.slug === req.query.a);
   const b = vehicles.find((v) => v.slug === req.query.b);
   if (!a || !b) return reply.code(404).send({ error: 'vehicle not found' });
@@ -33,7 +41,10 @@ app.get('/api/compare', async (req, reply) => {
 
 app.post(
   '/api/chat',
-  { config: { rateLimit: { max: Number(process.env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } } },
+  {
+    config: { rateLimit: { max: Number(process.env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } },
+    schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } }
+  },
   async (req, reply) => {
     const question = String(req.body?.question || '').trim();
     if (!question) return reply.code(400).send({ error: 'question required' });

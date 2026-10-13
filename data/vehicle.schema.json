@@ -5,7 +5,7 @@
   "required": ["slug", "status", "make", "model", "type", "years", "tier", "summary", "specs"],
   "properties": {
     "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
-    "status": { "enum": ["draft", "live"] },
+    "status": { "enum": ["draft", "researching", "license-review", "asset-processing", "qa", "live", "rejected"] },
     "make": { "type": "string" },
     "model": { "type": "string" },
     "generation": { "type": "string" },
@@ -29,7 +29,20 @@
     "model3d": {
       "type": "object",
       "required": ["glb", "credit"],
-      "properties": { "glb": { "type": "string" }, "credit": { "type": "string" } }
+      "properties": {
+        "glb": { "type": "string" },
+        "credit": { "type": "string" },
+        "license": { "enum": ["CC0", "CC BY 4.0", "CC BY 3.0", "written-permission"] },
+        "sourceUrl": { "type": "string", "pattern": "^https?://" },
+        "licenseEvidence": { "type": "string" },
+        "verifiedAt": { "type": "string", "format": "date" },
+        "originalHash": { "type": "string" },
+        "optimizedHash": { "type": "string" },
+        "accuracyNotes": { "type": "string" },
+        "triangleCount": { "type": "integer", "minimum": 0 },
+        "fileSizeBytes": { "type": "integer", "minimum": 0 },
+        "reviewer": { "type": "string" }
+      }
     },
     "poster": { "type": "string" }
   }

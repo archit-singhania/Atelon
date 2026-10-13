@@ -1,5 +1,5 @@
 // Provider chain: Hugging Face -> Groq -> Cloudflare Workers AI -> (caller falls back to no-AI answer).
-// NOTE: endpoint paths below follow the action plan but were NOT verified. Confirm in each provider's docs.
+// Endpoint paths verified against official provider documentation on 13 Oct 2026.
 const TIMEOUT_MS = 8000;
 
 async function openAiStyle(url, key, model, messages) {

@@ -6,7 +6,8 @@ export const bySlug = (slug?: string) => vehicles.find((v) => v.slug === slug);
 
 export const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
 
-export async function ask(question: string): Promise<{ answer: string; provider: string; sources: string[] }> {
+export interface ChatReply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean }
+export async function ask(question: string): Promise<ChatReply> {
   const res = await fetch(`${API_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

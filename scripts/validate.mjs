@@ -9,7 +9,8 @@ const vdir = path.join(root, 'data', 'vehicles');
 const strict = process.argv.includes('--strict');
 const TIERS = ['full', 'reference', 'specs-only'];
 const TYPES = ['car', 'motorcycle'];
-const OK_LICENSES = ['CC0', 'CC BY', 'CC BY 4.0', 'CC BY 3.0'];
+const STATUSES = ['draft', 'researching', 'license-review', 'asset-processing', 'qa', 'live', 'rejected'];
+const OK_LICENSES = ['CC0', 'CC BY', 'CC BY 4.0', 'CC BY 3.0', 'written-permission'];
 
 const errors = [];
 const warnings = [];
@@ -45,7 +46,7 @@ for (const f of files) {
   if (v.slug !== f.replace(/\.json$/, '')) err(f, `slug "${v.slug}" must match file name`);
   if (seen.has(v.slug)) err(f, `duplicate slug "${v.slug}"`);
   seen.add(v.slug);
-  if (!['draft', 'live'].includes(v.status)) err(f, `unknown status "${v.status}"`);
+  if (!STATUSES.includes(v.status)) err(f, `unknown status "${v.status}"`);
   if (!TIERS.includes(v.tier)) err(f, `unknown tier "${v.tier}"`);
   if (!TYPES.includes(v.type)) err(f, `unknown type "${v.type}"`);
   if (!Array.isArray(v.years) || v.years.length !== 2) err(f, 'years must be [start, end|null]');
@@ -62,6 +63,9 @@ for (const f of files) {
       if (!fs.existsSync(p)) err(f, `GLB not found: ${v.model3d.glb}`);
     }
     if (!v.model3d?.credit) err(f, 'model3d.credit (attribution line) required');
+    for (const k of ['license', 'sourceUrl', 'licenseEvidence', 'verifiedAt', 'originalHash', 'optimizedHash', 'accuracyNotes', 'triangleCount', 'fileSizeBytes', 'reviewer']) {
+      if (v.status === 'live' && (v.model3d?.[k] === undefined || v.model3d?.[k] === '')) err(f, `live 3D model needs model3d.${k}`);
+    }
     const row = ledger[v.slug];
     if (!row) err(f, 'no ledger row for a 3D model');
     else if (!OK_LICENSES.includes(row.license)) err(f, `ledger license "${row.license}" is not accepted (see docs/license-policy.md)`);
@@ -70,7 +74,7 @@ for (const f of files) {
   if (strict) {
     if (v.status !== 'live') err(f, 'still a draft (strict mode)');
     if (!v.specs?.length) err(f, 'no specs (strict mode)');
-  } else if (v.status === 'draft') warnings.push(`${f}: draft`);
+  } else if (v.status !== 'live') warnings.push(`${f}: ${v.status}`);
 }
 
 console.log(`Checked ${files.length} vehicle file(s).`);
