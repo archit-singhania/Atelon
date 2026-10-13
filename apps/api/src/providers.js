@@ -1,0 +1,55 @@
+// Provider chain: Hugging Face -> Groq -> Cloudflare Workers AI -> (caller falls back to no-AI answer).
+// NOTE: endpoint paths below follow the action plan but were NOT verified. Confirm in each provider's docs.
+const TIMEOUT_MS = 8000;
+
+async function openAiStyle(url, key, model, messages) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({ model, messages, max_tokens: 400, temperature: 0.2 }),
+    signal: AbortSignal.timeout(TIMEOUT_MS)
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const text = data?.choices?.[0]?.message?.content;
+  if (!text) throw new Error('empty response');
+  return text.trim();
+}
+
+async function cloudflare(accountId, token, model, messages) {
+  const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ messages, max_tokens: 400 }),
+    signal: AbortSignal.timeout(TIMEOUT_MS)
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  const text = data?.result?.response;
+  if (!text) throw new Error('empty response');
+  return text.trim();
+}
+
+export function buildChain(env = process.env) {
+  const chain = [];
+  if (env.HF_TOKEN && env.HF_MODEL)
+    chain.push({ name: 'huggingface', run: (m) => openAiStyle('https://router.huggingface.co/v1/chat/completions', env.HF_TOKEN, env.HF_MODEL, m) });
+  if (env.GROQ_API_KEY && env.GROQ_MODEL)
+    chain.push({ name: 'groq', run: (m) => openAiStyle('https://api.groq.com/openai/v1/chat/completions', env.GROQ_API_KEY, env.GROQ_MODEL, m) });
+  if (env.CF_ACCOUNT_ID && env.CF_API_TOKEN && env.CF_MODEL)
+    chain.push({ name: 'cloudflare', run: (m) => cloudflare(env.CF_ACCOUNT_ID, env.CF_API_TOKEN, env.CF_MODEL, m) });
+  return chain;
+}
+
+export async function askChain(chain, messages, log) {
+  for (const p of chain) {
+    try {
+      const text = await p.run(messages);
+      log.info({ provider: p.name }, 'chat answered');
+      return { text, provider: p.name };
+    } catch (e) {
+      log.warn({ provider: p.name, err: e.message }, 'provider failed, trying next');
+    }
+  }
+  return null;
+}

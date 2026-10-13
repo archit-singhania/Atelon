@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: atelon-api
+    runtime: node
+    plan: free
+    rootDir: apps/api
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CF_ACCOUNT_ID
+        sync: false
+      - key: CF_API_TOKEN
+        sync: false
+      - key: HF_MODEL
+        sync: false
+      - key: GROQ_MODEL
+        sync: false
+      - key: CF_MODEL
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: DAILY_CHAT_CAP
+        value: "300"

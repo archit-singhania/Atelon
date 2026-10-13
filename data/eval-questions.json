@@ -1,0 +1,12 @@
+[
+  {
+    "question": "What is the top speed of the Zorblax 9000?",
+    "mustInclude": ["don't have that data"],
+    "note": "Unknown vehicle: must refuse, not invent. Keep this style of test."
+  },
+  {
+    "question": "TODO: replace with a question about a live vehicle, e.g. its power output",
+    "mustInclude": ["TODO: the exact verified figure, as it appears in the data"],
+    "note": "Write ~50 of these with answers you verified yourself."
+  }
+]

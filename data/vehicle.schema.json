@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Atelon vehicle record",
+  "type": "object",
+  "required": ["slug", "status", "make", "model", "type", "years", "tier", "summary", "specs"],
+  "properties": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "status": { "enum": ["draft", "live"] },
+    "make": { "type": "string" },
+    "model": { "type": "string" },
+    "generation": { "type": "string" },
+    "type": { "enum": ["car", "motorcycle"] },
+    "years": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": ["integer", "null"] } },
+    "tier": { "enum": ["full", "reference", "specs-only"] },
+    "summary": { "type": "string" },
+    "specs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "value", "source"],
+        "properties": {
+          "key": { "type": "string" },
+          "value": { "type": ["number", "string", "boolean"] },
+          "unit": { "type": "string" },
+          "source": { "type": "string", "pattern": "^https?://" }
+        }
+      }
+    },
+    "model3d": {
+      "type": "object",
+      "required": ["glb", "credit"],
+      "properties": { "glb": { "type": "string" }, "credit": { "type": "string" } }
+    },
+    "poster": { "type": "string" }
+  }
+}

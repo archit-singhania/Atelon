@@ -1,0 +1,24 @@
+{
+  "name": "atelon",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Atelon - every machine in 3D. AI vehicle atlas for cars and motorcycles.",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "validate:strict": "node scripts/validate.mjs --strict",
+    "build:data": "node scripts/build-data.mjs",
+    "new-vehicle": "node scripts/new-vehicle.mjs",
+    "optimise": "node scripts/optimise.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "audit:licenses": "node scripts/audit-licenses.mjs",
+    "eval:chat": "node scripts/eval-chat.mjs",
+    "dev:web": "npm run dev -w apps/web",
+    "dev:api": "npm run dev -w apps/api",
+    "build": "npm run build -w apps/web"
+  },
+  "devDependencies": {
+    "sharp": "^0.33.4"
+  },
+  "engines": { "node": ">=20" }
+}
