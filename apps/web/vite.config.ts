@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['posters/*.webp'],
+      includeAssets: ['posters/*.webp', 'icons/*.png', 'brand/*.{svg,webp}'],
       manifest: {
         name: 'Atelon',
         short_name: 'Atelon',
@@ -17,12 +17,12 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' }
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,webp}'],
+        globPatterns: ['**/*.{js,css,html,svg,webp,png}'],
         runtimeCaching: [
           { urlPattern: /\/posters\/.*\.webp$/, handler: 'CacheFirst', options: { cacheName: 'posters', expiration: { maxEntries: 150 } } }
         ]

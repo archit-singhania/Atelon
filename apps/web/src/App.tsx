@@ -17,7 +17,10 @@ export default function App() {
     <>
       <header className="nav-wrap">
         <div className="nav glass-panel">
-        <Link to="/" className="brand">ATELON</Link>
+        <Link to="/" className="brand" aria-label="Atelon home">
+          <img className="brand-logo brand-logo-dark" src="/brand/atelon-wordmark-dark.webp" alt="" />
+          <img className="brand-logo brand-logo-light" src="/brand/atelon-wordmark-light.webp" alt="" />
+        </Link>
         <nav>
           <NavLink to="/garage">Garage</NavLink>
           <NavLink to="/compare">Compare</NavLink>

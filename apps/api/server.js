@@ -17,7 +17,7 @@ const app = Fastify({
 const vehicles = loadVehicles(); // in memory, no database
 const chain = buildChain();
 
-const origins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173,https://localhost,capacitor://localhost')
+const origins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,https://localhost,capacitor://localhost')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);

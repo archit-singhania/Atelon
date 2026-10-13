@@ -3,7 +3,7 @@
 Run from the repo root unless noted. Android Studio must be installed (free).
 
 1. `npm install`
-2. `npm run icons` (makes PWA/Android icons from `Atelon_logo.png`)
+2. `npm run icons` (makes PWA/Android icons from the approved masters in `assets/logo/`)
 3. Set `VITE_API_URL` to your Render URL (create `apps/web/.env.production`), then in `apps/web`:
    `npm run build`
 4. `cd apps/web` then `npx cap add android` (first time only), then `npm run cap:sync`

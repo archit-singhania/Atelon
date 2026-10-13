@@ -16,10 +16,13 @@ export default function ChatDemo() {
 
   return (
     <section className="page">
+      <p className="eyebrow">Atelon help desk</p>
       <h2>Ask anything, get sourced answers</h2>
-      <div className="bubble">{Q}</div>
-      <div className="bubble" style={{ borderColor: 'var(--accent)' }}>{A.slice(0, n)}</div>
-      <small className="muted">Example conversation.</small>
+      <div className="support-demo glass-panel">
+        <div className="message-row user"><div className="message"><p>{Q}</p></div></div>
+        <div className="message-row assistant"><div className="message-avatar"><img src="/icons/icon-192.png" alt="Atelon AI" /></div><div className="message"><p>{A.slice(0, n)}</p></div></div>
+      </div>
+      <small className="muted">Example conversation · grounded in verified Garage data.</small>
     </section>
   );
 }

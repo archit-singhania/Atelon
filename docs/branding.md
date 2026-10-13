@@ -10,5 +10,5 @@ Do these first; domains and handles can disappear overnight.
 - [ ] Tagline (pick one): "Atelon, every machine in 3D" / "Atelon, the AI vehicle atlas"
 - [ ] Use Atelon everywhere: repo, app ID `com.atelon.app`, Vercel and Render project names, style guide
 
-Logo: `Atelon_logo.png` (repo root). Run `npm run icons` to generate app icons.
+Approved brand masters live in `assets/logo/`: light/dark 4K PNGs, transparent light/dark 4K PNGs, and light/dark SVGs. Run `npm run icons` to generate themed web lockups, favicon, PWA icons, Apple touch icon and the mobile source icon.
 Update `apps/web/src/lib/site.ts` once the domain is decided.

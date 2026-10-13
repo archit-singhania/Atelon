@@ -28,6 +28,10 @@ Adaptive premium showroom. Dark mode uses obsidian and smoked glass; light mode 
 - Respect `prefers-reduced-transparency` and provide a solid-surface fallback.
 - Internal component gallery: `/design-system`.
 
+## Brand assets
+- The six approved masters live in `assets/logo/`; do not edit these originals.
+- Use the dark artwork on dark canvases and the light artwork on light canvases.
+- Run `npm run icons` after changing a master to regenerate web, favicon, Apple touch and PWA derivatives.
+
 ## To do (needs you)
 - Figma sketch of the landing page.
-- Final logo usage rules (`Atelon_logo.png` in the repo root is the source file).
