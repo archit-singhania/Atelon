@@ -15,6 +15,7 @@ import ThemeToggle from './components/ThemeToggle';
 export default function App() {
   return (
     <>
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="nav-wrap">
         <div className="nav glass-panel">
         <Link to="/" className="brand" aria-label="Atelon home">
@@ -31,7 +32,7 @@ export default function App() {
         <ThemeToggle />
         </div>
       </header>
-      <main>
+      <main id="main-content">
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/garage" element={<Garage />} />

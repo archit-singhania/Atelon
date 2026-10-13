@@ -13,8 +13,8 @@ export default function Compare() {
     return s ? `${s.value}${s.unit ? ' ' + s.unit : ''}` : 'no data';
   };
 
-  const picker = (value: string, set: (s: string) => void) => (
-    <select value={value} onChange={(e) => set(e.target.value)}>
+  const picker = (label: string, value: string, set: (s: string) => void) => (
+    <select aria-label={label} value={value} onChange={(e) => set(e.target.value)}>
       <option value="">Choose a vehicle</option>
       {vehicles.map((v) => <option key={v.slug} value={v.slug}>{v.make} {v.model}</option>)}
     </select>
@@ -23,7 +23,7 @@ export default function Compare() {
   return (
     <div className="page">
       <h1>Compare</h1>
-      <div className="row">{picker(a, setA)}{picker(b, setB)}</div>
+      <div className="row">{picker('First vehicle', a, setA)}{picker('Second vehicle', b, setB)}</div>
       {va && vb ? (
         keys.length ? (
           <table>

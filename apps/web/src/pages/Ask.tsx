@@ -65,7 +65,7 @@ export default function Ask() {
                 <div className={`message ${message.error ? 'error' : ''}`}>
                   <p>{message.text}</p>
                   {message.reply && <div className="message-meta">{message.reply.fallback ? 'Verified-data fallback' : `Answered by ${message.reply.provider}`}{message.reply.matchedVehicles.length ? ` · ${message.reply.matchedVehicles.join(', ')}` : ''}</div>}
-                  {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer">{index + 1}</a>)}</div>}
+                  {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" aria-label={`Open source ${index + 1}`}>{index + 1}</a>)}</div>}
                 </div>
               </article>
             ))}

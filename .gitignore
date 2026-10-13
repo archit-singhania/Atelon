@@ -4,6 +4,7 @@ dist/
 .env.*
 !.env.example
 assets/raw/
+source-assets/
 *.keystore
 *.jks
 android/app/release/
