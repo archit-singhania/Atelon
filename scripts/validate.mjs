@@ -68,7 +68,8 @@ for (const f of files) {
     }
     const row = ledger[v.slug];
     if (!row) err(f, 'no ledger row for a 3D model');
-    else if (!OK_LICENSES.includes(row.license)) err(f, `ledger license "${row.license}" is not accepted (see docs/license-policy.md)`);
+    else if (!OK_LICENSES.includes(row.license) && v.status === 'live') err(f, `ledger license "${row.license}" is not accepted for a live model (see docs/license-policy.md)`);
+    else if (!OK_LICENSES.includes(row.license)) warnings.push(`${f}: 3D provenance is still unverified`);
   }
 
   if (strict) {

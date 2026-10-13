@@ -23,12 +23,12 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 - [x] [CODE] Reduced-motion, reduced-transparency and no-backdrop-filter fallbacks
 - [x] [CODE] Responsive Ask AI workspace and browser verification in light/dark themes
 
-## Phase 3 — First ten vehicles
+## Phase 3 — First showcase vehicles
 
 - [x] [CODE] Thirty-candidate pool
-- [x] [CODE] Five-car/five-motorcycle shortlist in `data/showcase.csv`
+- [x] [CODE] Owner-supplied nine-car showcase batch in `data/showcase.csv`; all nine now have browser-loadable GLBs
 - [ ] [YOU] Manually verify the proposed asset pages and download the originals/evidence
-- [ ] [CODE] Research and build ten sourced vehicle records after asset identity is confirmed
+- [ ] [CODE] Research and complete nine sourced vehicle records after asset identity is confirmed
 - [ ] [CODE] Strict schema/editorial validation and live status
 
 ## Phase 4 — Obtain and approve 3D models
@@ -47,7 +47,7 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 ## Phase 6 — Web experience
 
 - [~] [CODE] All routes, Garage, Compare, Ask AI, Credits, metadata and legal drafts
-- [ ] [CODE] Populate with ten live records and asset-generated Credits
+- [ ] [CODE] Populate with nine live records and asset-generated Credits
 - [ ] [CODE] Full content prerendering, true production 404 and release browser QA
 
 ## Phase 7 — Backend and grounded AI
@@ -59,7 +59,7 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 ## Phase 8 — PWA and Android
 
 - [~] [CODE] Manifest, adaptive branding, service worker, Capacitor config and tooling
-- [ ] [CODE] Create Android project after the ten-vehicle web build stabilizes
+- [ ] [CODE] Create Android project after the nine-vehicle web build stabilizes
 - [ ] [YOU] Physical-device checks, keystore backup and signed APK release
 
 ## Phase 9 — Deployment, legal review and launch
@@ -70,4 +70,4 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 
 ## Phase 10 — Scale
 
-- [ ] Expand to 25, 50 and 100 only after the ten-vehicle pipeline passes every gate.
+- [ ] Expand to 25, 50 and 100 only after the nine-vehicle pipeline passes every gate.
