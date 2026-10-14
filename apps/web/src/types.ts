@@ -34,6 +34,7 @@ export interface Vehicle {
     reviewer?: string;
   };
   poster?: string;
+  posterSmall?: string;
 }
 
 export const TIER_LABEL: Record<Tier, string> = {

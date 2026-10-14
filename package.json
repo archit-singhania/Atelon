@@ -12,6 +12,7 @@
     "build:data": "node scripts/build-data.mjs",
     "new-vehicle": "node scripts/new-vehicle.mjs",
     "optimise": "node scripts/optimise.mjs",
+    "posters": "node scripts/generate-posters.mjs",
     "icons": "node scripts/make-icons.mjs",
     "audit:licenses": "node scripts/audit-licenses.mjs",
     "eval:chat": "node scripts/eval-chat.mjs",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@gltf-transform/cli": "^4.5.1",
     "esbuild": "^0.28.2",
+    "puppeteer-core": "^25.13.0",
     "sharp": "^0.35.5",
     "vite": "^8.3.4"
   },

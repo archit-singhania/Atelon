@@ -1,4 +1,5 @@
-import { Link, NavLink, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Garage from './pages/Garage';
 import VehicleDetail from './pages/VehicleDetail';
@@ -11,8 +12,13 @@ import Terms from './pages/Terms';
 import Suggest from './pages/Suggest';
 import DesignQA from './pages/DesignQA';
 import ThemeToggle from './components/ThemeToggle';
+const PosterStudio = lazy(() => import('./pages/PosterStudio'));
 
 export default function App() {
+  const location = useLocation();
+  if (location.pathname.startsWith('/poster-studio/')) {
+    return <Suspense fallback={null}><Routes><Route path="/poster-studio/:slug" element={<PosterStudio />} /></Routes></Suspense>;
+  }
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>

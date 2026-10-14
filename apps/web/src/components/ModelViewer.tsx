@@ -4,7 +4,7 @@ import { Bounds, ContactShadows, OrbitControls, useGLTF } from '@react-three/dre
 import type { Group } from 'three';
 
 function Model({ url, scrollRotate }: { url: string; scrollRotate: boolean }) {
-  const { scene } = useGLTF(url); // meshopt-compressed GLBs are supported by default
+  const { scene } = useGLTF(url, false, true); // explicitly install Meshopt before loading optimized GLBs
   const group = useRef<Group>(null);
   useFrame(() => {
     if (scrollRotate && group.current) group.current.rotation.y = window.scrollY * 0.004; // scroll-driven orbit

@@ -10,7 +10,7 @@ const strict = process.argv.includes('--strict');
 const TIERS = ['full', 'reference', 'specs-only'];
 const TYPES = ['car', 'motorcycle'];
 const STATUSES = ['draft', 'researching', 'license-review', 'asset-processing', 'qa', 'live', 'rejected'];
-const OK_LICENSES = ['CC0', 'CC BY', 'CC BY 4.0', 'CC BY 3.0', 'written-permission'];
+const OK_LICENSES = ['CC0', 'CC BY', 'CC BY 4.0', 'CC BY 3.0', 'written-permission', 'user-supplied'];
 
 const errors = [];
 const warnings = [];
@@ -63,6 +63,14 @@ for (const f of files) {
       if (!fs.existsSync(p)) err(f, `GLB not found: ${v.model3d.glb}`);
     }
     if (!v.model3d?.credit) err(f, 'model3d.credit (attribution line) required');
+    if (v.poster) {
+      const poster = path.join(root, 'apps', 'web', 'public', v.poster.replace(/^\//, ''));
+      if (!fs.existsSync(poster)) err(f, `poster not found: ${v.poster}`);
+    }
+    if (v.posterSmall) {
+      const posterSmall = path.join(root, 'apps', 'web', 'public', v.posterSmall.replace(/^\//, ''));
+      if (!fs.existsSync(posterSmall)) err(f, `small poster not found: ${v.posterSmall}`);
+    }
     for (const k of ['license', 'sourceUrl', 'licenseEvidence', 'verifiedAt', 'originalHash', 'optimizedHash', 'accuracyNotes', 'triangleCount', 'fileSizeBytes', 'reviewer']) {
       if (v.status === 'live' && (v.model3d?.[k] === undefined || v.model3d?.[k] === '')) err(f, `live 3D model needs model3d.${k}`);
     }

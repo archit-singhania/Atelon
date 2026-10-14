@@ -1,10 +1,10 @@
 vehicle_slug,source_url,creator,license,date_checked,downloads_ok,triangles,accuracy_1_5,logos_in_textures,tier_decision,attribution_line,file_hash
-mazda-lm-vision,user-supplied-archive,unknown,unverified,,, ,,,reference,User-supplied model; provenance unverified,219662E4365B2DAE935B2DB79A8E0657662CF0AF28C1B22BC191D8F273D75FB8
-gmc-sierra-1500-at4x,user-supplied-archive,unknown,unverified,,, ,,,reference,User-supplied model; provenance unverified,44C1213EF7AF897416BB99E6C6AD0AD8A976DDA19838F46FEA48EBB3C0FFC6AD
-nissan-skyline-r34-brians,user-supplied-archive,unknown,unverified,,, ,,,reference,User-supplied model; provenance unverified,2FD291AB05364064D1DBCAD0AE3AED96A2418625EF445CF00B44389C281DB467
-plymouth-hemi-cuda-1971,user-supplied-archive,unknown,unverified,,, ,,,reference,User-supplied model; provenance unverified,F9F95428D55ADE58DCB4FBBA8BCA731FBBDD09A9378EBC8A2B2AB72BFC0E67D6
-delorean-dmc-12-time-machine,user-supplied-archive,unknown,unverified,,, ,,,reference,User-supplied model; provenance unverified,958665FD1E187D52AFC7BDF8F91468C89E762286AA938F6C4FC8D2F62239A550
-lamborghini-countach-5000qv,user-supplied-file,unknown,unverified,,,,,,reference,User-supplied model; provenance unverified,4A2D4643E34A0B67C0638D830037587214B3A53CF73714E47A8AE2101CD325C2
-porsche-911-carrera-4s,user-supplied-file,unknown,unverified,,,,,,reference,User-supplied model; provenance unverified,75F3924035112DE7D4352C685C2D081566669A4A67F50815607F9D56A132AAE4
-porsche-911-930-turbo-1975,user-supplied-archive,unknown,unverified,,,,,,reference,User-supplied model; provenance unverified,2571B4A70DB59027709CC4E8C1AA42106E94D69801455387C95E12FE31458B33
-mahindra-thar-4x4,user-supplied-file,unknown,unverified,,,,,,reference,User-supplied model; provenance unverified,2F564B36990759C17AF26C1943D086A895BCA9CFF1A0B214C3BDDCFA79DBC336
+mazda-furai,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,285137,4,yes,reference,User-supplied reference model,219662E4365B2DAE935B2DB79A8E0657662CF0AF28C1B22BC191D8F273D75FB8
+gmc-sierra-1500-at4x,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,311822,4,yes,reference,User-supplied reference model,44C1213EF7AF897416BB99E6C6AD0AD8A976DDA19838F46FEA48EBB3C0FFC6AD
+lamborghini-countach-5000qv,user-supplied-file,unknown,user-supplied,2026-10-14,yes,122973,4,yes,reference,User-supplied reference model,4A2D4643E34A0B67C0638D830037587214B3A53CF73714E47A8AE2101CD325C2
+mahindra-thar-4x4,user-supplied-file,unknown,user-supplied,2026-10-14,yes,103733,4,yes,reference,User-supplied reference model,2F564B36990759C17AF26C1943D086A895BCA9CFF1A0B214C3BDDCFA79DBC336
+delorean-dmc-12-time-machine,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,400257,4,yes,reference,User-supplied reference model,958665FD1E187D52AFC7BDF8F91468C89E762286AA938F6C4FC8D2F62239A550
+nissan-skyline-r34-brians,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,224741,4,yes,reference,User-supplied reference model,2FD291AB05364064D1DBCAD0AE3AED96A2418625EF445CF00B44389C281DB467
+plymouth-hemi-cuda-1971,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,191869,4,yes,reference,User-supplied reference model,F9F95428D55ADE58DCB4FBBA8BCA731FBBDD09A9378EBC8A2B2AB72BFC0E67D6
+porsche-911-930-turbo-1975,user-supplied-archive,unknown,user-supplied,2026-10-14,yes,145510,4,yes,reference,User-supplied reference model,2571B4A70DB59027709CC4E8C1AA42106E94D69801455387C95E12FE31458B33
+porsche-911-carrera-4s,user-supplied-file,unknown,user-supplied,2026-10-14,yes,183782,4,yes,reference,User-supplied reference model,75F3924035112DE7D4352C685C2D081566669A4A67F50815607F9D56A132AAE4

@@ -44,6 +44,7 @@
         "reviewer": { "type": "string" }
       }
     },
-    "poster": { "type": "string" }
+    "poster": { "type": "string" },
+    "posterSmall": { "type": "string" }
   }
 }

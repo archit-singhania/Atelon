@@ -1,10 +1,10 @@
 priority,slug,make,model,year_or_generation,format,status
-1,mazda-lm-vision,Mazda,LM Vision,concept,GLB,asset-processing
-2,lamborghini-countach-5000qv,Lamborghini,Countach 5000 QV,1985-1988,GLB,asset-processing
-3,porsche-911-carrera-4s,Porsche,911 Carrera 4S Cabriolet,992 / 2019,GLB,asset-processing
-4,gmc-sierra-1500-at4x,GMC,Sierra 1500 AT4X,2024,GLB,asset-processing
-5,nissan-skyline-r34-brians,Nissan,Skyline GT-R R34 Brian's,film replica,GLB,asset-processing
-6,plymouth-hemi-cuda-1971,Plymouth,Hemi Cuda,1971,GLB,asset-processing
-7,delorean-dmc-12-time-machine,DeLorean,DMC-12 Time Machine,1985 film replica,GLB,asset-processing
-8,porsche-911-930-turbo-1975,Porsche,911 Turbo 930,1975,GLB,asset-processing
-9,mahindra-thar-4x4,Mahindra,Thar 4x4,generation pending,GLB,asset-processing
+1,mazda-furai,Mazda,Furai,2008 concept,GLB,live
+2,lamborghini-countach-5000qv,Lamborghini,Countach 5000 Quattrovalvole,1985-1988,GLB,live
+3,porsche-911-carrera-4s,Porsche,911 Carrera 4S Cabriolet,992 / 2019,GLB,live
+4,gmc-sierra-1500-at4x,GMC,Sierra 1500 AT4X,2024,GLB,live
+5,nissan-skyline-r34-brians,Nissan,Skyline GT-R R34 film replica,BNR34 reference,GLB,live
+6,plymouth-hemi-cuda-1971,Plymouth,Hemi 'Cuda,1971,GLB,live
+7,delorean-dmc-12-time-machine,DeLorean,DMC-12 Time Machine,1985 film replica,GLB,live
+8,porsche-911-930-turbo-1975,Porsche,911 Turbo 3.0 (930),1975,GLB,live
+9,mahindra-thar-4x4,Mahindra,Thar 4x4,second generation,GLB,live
