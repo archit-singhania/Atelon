@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { bySlug } from '../lib/data';
+import { bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
 import TierBadge from '../components/TierBadge';
 
@@ -17,12 +17,13 @@ export default function VehicleDetail() {
 
   if (!v) return <div className="page"><h1>Vehicle not found</h1><Link to="/garage">Back to the Garage</Link></div>;
   const has3d = v.model3d && v.tier !== 'specs-only';
+  const related = vehicles.filter((item) => item.slug !== v.slug && (item.make === v.make || item.type === v.type)).slice(0, 3);
 
   return (
     <div className="page">
       <TierBadge tier={v.tier} />
       <h1 style={{ marginTop: 10 }}>{v.make} {v.model}</h1>
-      <p className="muted">{v.type} · {v.years[0]}-{v.years[1] ?? 'present'}</p>
+      <p className="muted">{v.type} · {v.years[0]}-{v.years[1] ?? 'present'}{v.generation ? ` · ${v.generation}` : ''}</p>
 
       <div className="viewer big">
         {has3d ? (
@@ -42,6 +43,7 @@ export default function VehicleDetail() {
           <ArButton glb={v.model3d!.glb} name={`${v.make} ${v.model}`} />
         </Suspense>
       )}
+      {related.length > 0 && <section className="related"><h2>Explore next</h2><div className="grid">{related.map((item) => <Link className="card" key={item.slug} to={`/vehicle/${item.slug}`}>{item.posterSmall && <img className="garage-poster" src={item.posterSmall} alt="" loading="lazy" />}<h3>{item.make} {item.model}</h3><small>{item.generation}</small></Link>)}</div></section>}
 
       <p>{v.summary}</p>
 

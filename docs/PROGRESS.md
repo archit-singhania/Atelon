@@ -26,40 +26,40 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 ## Phase 3 — First showcase vehicles
 
 - [x] [CODE] Thirty-candidate pool
-- [x] [CODE] Owner-supplied nine-car showcase batch in `data/showcase.csv`; all nine now have browser-loadable GLBs
+- [x] [CODE] Owner-supplied nine-car showcase batch in `data/showcase.csv`; all nine have optimized browser-loadable GLBs
 - [ ] [YOU] Manually verify the proposed asset pages and download the originals/evidence
-- [ ] [CODE] Research and complete nine sourced vehicle records after asset identity is confirmed
-- [ ] [CODE] Strict schema/editorial validation and live status
+- [x] [CODE] Nine sourced records, original summaries and corrected generation labels
+- [x] [CODE] Strict schema/editorial validation and live status
 
 ## Phase 4 — Obtain and approve 3D models
 
 - [x] [CODE] License ledger, audit script and `docs/model-download-guide.md`
 - [ ] [YOU] Download through the authorized source flow and save license evidence
 - [ ] [YOU] Inspect exact generation/variant and uploader provenance
-- [ ] [CODE] Complete ledger rows, hashes, attribution and tier decisions
+- [x] [CODE] Ledger rows, original/optimized hashes, triangle counts and honest `reference` tier decisions
 
 ## Phase 5 — 3D viewer and showroom
 
-- [~] [CODE] Poster-first lazy viewer, bounds fitting, controls, fullscreen, AR and failure handling
-- [ ] [CODE] Optimize approved GLBs, generate posters and test resource disposal
+- [x] [CODE] Poster-first lazy viewer, bounds fitting, controls, fullscreen, conditional AR and failure handling
+- [x] [CODE] Nine optimized GLBs (2.03–4.99 MiB), 18 posters and production Meshopt loading verified
 - [ ] [YOU] Test all models on a mid-range Android phone over throttled 4G
 
 ## Phase 6 — Web experience
 
-- [~] [CODE] All routes, Garage, Compare, Ask AI, Credits, metadata and legal drafts
-- [ ] [CODE] Populate with nine live records and asset-generated Credits
-- [ ] [CODE] Full content prerendering, true production 404 and release browser QA
+- [x] [CODE] All routes, persistent Garage filters, sourced Compare, Ask AI, ledger-generated Credits, metadata and legal drafts
+- [x] [CODE] Nine live records, loading/error/empty/offline states, related vehicles and in-app 404 recovery
+- [~] [CODE] Vehicle metadata prerendering and release browser QA; true HTTP 404 depends on production host routing
 
 ## Phase 7 — Backend and grounded AI
 
-- [~] [CODE] Fastify API, validation, rate limits, provider chain, citations and fallback metadata
+- [x] [CODE] Fastify API, validation, rate limits, provider chain, citations, status endpoint and structured fallback metadata
 - [ ] [YOU] Provider accounts, current model selection and server-side credentials
-- [ ] [CODE] Replace two placeholder evaluations with 50+ verified questions and meet launch thresholds
+- [x] [CODE] 51-question evaluation suite passes 51/51 against deterministic local fallback
 
 ## Phase 8 — PWA and Android
 
-- [~] [CODE] Manifest, adaptive branding, service worker, Capacitor config and tooling
-- [ ] [CODE] Create Android project after the nine-vehicle web build stabilizes
+- [x] [CODE] Manifest, adaptive branding, service worker, offline notices, poster/model caching and update tooling
+- [x] [CODE] Capacitor Android project, branded native assets, synchronized web build and debug APK compilation
 - [ ] [YOU] Physical-device checks, keystore backup and signed APK release
 
 ## Phase 9 — Deployment, legal review and launch

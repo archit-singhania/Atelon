@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ask } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
 
-interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean }
-interface Message { id: number; role: 'assistant' | 'user'; text: string; reply?: Reply; error?: boolean }
+interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean; fallbackReason?: string | null; retryable?: boolean; attemptedProviders?: string[] }
+interface Message { id: number; role: 'assistant' | 'user'; text: string; reply?: Reply; error?: boolean; retryText?: string }
 
 const suggestions = ['What can I explore in Atelon?', 'How do Full 3D and Reference 3D differ?', 'Compare two vehicles from the Garage'];
 
@@ -32,7 +32,7 @@ export default function Ask() {
       const reply = await ask(question);
       setMessages((items) => [...items, { id: nextId.current++, role: 'assistant', text: reply.answer, reply }]);
     } catch (error) {
-      setMessages((items) => [...items, { id: nextId.current++, role: 'assistant', text: error instanceof Error ? error.message : 'I couldn’t reach the help desk just now. Please try again.', error: true }]);
+      setMessages((items) => [...items, { id: nextId.current++, role: 'assistant', text: error instanceof Error ? error.message : 'I couldn’t reach the help desk just now. Please try again.', error: true, retryText: question }]);
     } finally { setBusy(false); }
   }
 
@@ -64,8 +64,9 @@ export default function Ask() {
                 {message.role === 'assistant' && <div className="message-avatar"><img src="/icons/icon-192.png" alt="Atelon AI" /></div>}
                 <div className={`message ${message.error ? 'error' : ''}`}>
                   <p>{message.text}</p>
-                  {message.reply && <div className="message-meta">{message.reply.fallback ? 'Verified-data fallback' : `Answered by ${message.reply.provider}`}{message.reply.matchedVehicles.length ? ` · ${message.reply.matchedVehicles.join(', ')}` : ''}</div>}
+                  {message.reply && <div className="message-meta">{message.reply.fallback ? `Verified-data fallback${message.reply.fallbackReason ? ` · ${message.reply.fallbackReason}` : ''}` : `Answered by ${message.reply.provider}`}{message.reply.matchedVehicles.length ? ` · ${message.reply.matchedVehicles.join(', ')}` : ''}</div>}
                   {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source, index) => <a key={source} href={source} target="_blank" rel="noreferrer" aria-label={`Open source ${index + 1}`}>{index + 1}</a>)}</div>}
+                  <div className="message-actions"><button type="button" onClick={() => navigator.clipboard?.writeText(message.text)}>Copy</button>{message.retryText && <button type="button" onClick={() => submit(message.retryText)}>Retry</button>}</div>
                 </div>
               </article>
             ))}

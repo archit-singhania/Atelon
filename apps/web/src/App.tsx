@@ -12,6 +12,8 @@ import Terms from './pages/Terms';
 import Suggest from './pages/Suggest';
 import DesignQA from './pages/DesignQA';
 import ThemeToggle from './components/ThemeToggle';
+import OfflineNotice from './components/OfflineNotice';
+import NotFound from './pages/NotFound';
 const PosterStudio = lazy(() => import('./pages/PosterStudio'));
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
+      <OfflineNotice />
       <header className="nav-wrap">
         <div className="nav glass-panel">
         <Link to="/" className="brand" aria-label="Atelon home">
@@ -51,7 +54,7 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/suggest" element={<Suggest />} />
           <Route path="/design-system" element={<DesignQA />} />
-          <Route path="*" element={<div className="page"><h1>Not found</h1><Link to="/garage">Back to the Garage</Link></div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <footer className="foot">

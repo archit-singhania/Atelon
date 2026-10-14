@@ -16,6 +16,7 @@
     "icons": "node scripts/make-icons.mjs",
     "audit:licenses": "node scripts/audit-licenses.mjs",
     "eval:chat": "node scripts/eval-chat.mjs",
+    "eval:make": "node scripts/make-eval-set.mjs",
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run dev -w apps/api",
     "build": "npm run build -w apps/web"

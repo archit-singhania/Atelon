@@ -15,6 +15,7 @@ export function loadVehicles() {
 }
 
 const tokens = (s) => s.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+const normalized = (s) => tokens(s).join(' ');
 
 export function scoreVehicle(v, queryTokens) {
   const hay = new Set(tokens(`${v.make} ${v.model} ${v.generation || ''} ${v.slug}`));
@@ -35,6 +36,13 @@ export function search(vehicles, q, limit = 10) {
 }
 
 export function findForQuestion(vehicles, question, limit = 3) {
+  const phrase = normalized(question);
+  const explicit = vehicles.filter((v) => {
+    const fullName = normalized(`${v.make} ${v.model}`);
+    const model = normalized(v.model);
+    return phrase.includes(fullName) || (model.split(' ').length >= 2 && phrase.includes(model));
+  });
+  if (explicit.length) return explicit.slice(0, limit);
   const qt = tokens(question);
   return vehicles
     .map((v) => ({ v, s: scoreVehicle(v, qt) }))

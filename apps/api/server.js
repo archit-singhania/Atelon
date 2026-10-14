@@ -22,10 +22,13 @@ const origins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173,http://127
   .map((s) => s.trim())
   .filter(Boolean);
 
-await app.register(cors, { origin: origins });
+const corsOrigins = process.env.NODE_ENV === 'production' ? origins : [...origins, /^http:\/\/(localhost|127\.0\.0\.1):\d+$/];
+await app.register(cors, { origin: corsOrigins });
 await app.register(rateLimit, { global: false });
 
-app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((p) => p.name) }));
+app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((p) => p.name), aiReady: chain.length > 0 }));
+
+app.get('/api/status', async () => ({ catalogue: { vehicles: vehicles.length, updatedAt: new Date().toISOString() }, ai: { ready: chain.length > 0, providers: chain.map((p) => p.name), deterministicFallback: true } }));
 
 app.get('/api/search', { schema: { querystring: { type: 'object', properties: { q: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (req) => {
   const q = String(req.query.q || '').slice(0, 100);

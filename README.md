@@ -11,10 +11,13 @@ npm run validate        # check data/vehicles and data/ledger.csv
 cp .env.example .env    # fill in secrets (never commit)
 npm run dev:api         # http://localhost:8787/health
 npm run dev:web         # http://localhost:5173
+npm run eval:make       # regenerate the 50 grounded chat cases
+npm run eval:chat       # run them against API_URL (defaults to localhost:8787)
 ```
 
 ## Layout
 - `apps/web` Vite + React + Three.js (site, PWA, Capacitor shell)
+- `apps/web/android` synchronized Capacitor Android project
 - `apps/api` Fastify server for Render (AI proxy, search)
 - `data/vehicles` one JSON file per vehicle; `data/ledger.csv` license records
 - `assets/raw` original downloads (git-ignored); `scripts/` validate, build-data, optimise

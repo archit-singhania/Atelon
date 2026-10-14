@@ -42,14 +42,16 @@ export function buildChain(env = process.env) {
 }
 
 export async function askChain(chain, messages, log) {
+  const attemptedProviders = [];
   for (const p of chain) {
+    attemptedProviders.push(p.name);
     try {
       const text = await p.run(messages);
       log.info({ provider: p.name }, 'chat answered');
-      return { text, provider: p.name };
+      return { text, provider: p.name, attemptedProviders };
     } catch (e) {
       log.warn({ provider: p.name, err: e.message }, 'provider failed, trying next');
     }
   }
-  return null;
+  return { text: null, provider: null, attemptedProviders };
 }

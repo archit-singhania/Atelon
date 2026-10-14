@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Atelon</string>
+    <string name="title_activity_main">Atelon</string>
+    <string name="package_name">com.atelon.app</string>
+    <string name="custom_url_scheme">com.atelon.app</string>
+</resources>

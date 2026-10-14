@@ -22,7 +22,7 @@ export interface Vehicle {
   model3d?: {
     glb: string;
     credit: string;
-    license?: 'CC0' | 'CC BY 4.0' | 'CC BY 3.0' | 'written-permission';
+    license?: 'CC0' | 'CC BY 4.0' | 'CC BY 3.0' | 'written-permission' | 'user-supplied';
     sourceUrl?: string;
     licenseEvidence?: string;
     verifiedAt?: string;

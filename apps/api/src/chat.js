@@ -27,12 +27,22 @@ function formatContext(vehicles) {
     .join('\n\n');
 }
 
-function noAiAnswer(vehicles) {
+const REQUESTED_KEYS = ['power', 'torque', 'engine', 'transmission', 'top speed', 'weight', 'wheelbase', 'dimensions', 'fuel', 'chassis', 'debut', 'layout', 'ground clearance', 'water wading'];
+function missingRequestedData(vehicles, question) {
+  const requested = REQUESTED_KEYS.find((key) => question.toLowerCase().includes(key));
+  return requested && !vehicles.some((vehicle) => vehicle.specs.some((spec) => spec.key.toLowerCase().includes(requested))) ? requested : null;
+}
+
+function noAiAnswer(vehicles, question) {
   if (!vehicles.length) return "AI is resting, and I couldn't match a vehicle in your question. Try a make and model, e.g. a name from the Garage.";
+  const requested = missingRequestedData(vehicles, question);
+  if (requested) {
+    return `I don't have that ${requested} data for ${vehicles.map((vehicle) => `${vehicle.make} ${vehicle.model}`).join(' or ')}.`;
+  }
   const body = vehicles
     .map((v) => {
       const specs = v.specs.length ? v.specs.map((s) => `${s.key}: ${s.value}${s.unit ? ' ' + s.unit : ''}`).join('; ') : 'no verified specs yet';
-      return `${v.make} ${v.model} - ${specs}`;
+      return `${v.make} ${v.model} - 3D tier: ${v.tier}. ${specs}`;
     })
     .join('\n');
   return `AI is resting, here are the facts:\n${body}`;
@@ -51,9 +61,9 @@ function underDailyCap() {
 
 export async function answerQuestion({ vehicles, chain, question, log }) {
   const matches = findForQuestion(vehicles, question);
-  const sources = [...new Set(matches.flatMap((v) => v.specs.map((s) => s.source)))];
+  const sources = missingRequestedData(matches, question) ? [] : [...new Set(matches.flatMap((v) => v.specs.map((s) => s.source)))];
 
-  if (!matches.length) return { answer: "I don't have that data. Try naming a make and model from the Garage.", provider: 'none', sources: [], matchedVehicles: [], fallback: true };
+  if (!matches.length) return { answer: "I don't have that data. Try naming a make and model from the Garage.", provider: 'none', sources: [], matchedVehicles: [], fallback: true, fallbackReason: 'no-matching-vehicle', retryable: false, attemptedProviders: [] };
 
   if (chain.length && underDailyCap()) {
     const messages = [
@@ -61,7 +71,8 @@ export async function answerQuestion({ vehicles, chain, question, log }) {
       { role: 'user', content: `DATA:\n${formatContext(matches)}\n\nQUESTION: ${question}` }
     ];
     const r = await askChain(chain, messages, log);
-    if (r) return { answer: r.text, provider: r.provider, sources, matchedVehicles: matches.map((v) => v.slug), fallback: false };
+    if (r.text) return { answer: r.text, provider: r.provider, sources, matchedVehicles: matches.map((v) => v.slug), fallback: false, fallbackReason: null, retryable: false, attemptedProviders: r.attemptedProviders };
+    return { answer: noAiAnswer(matches, question), provider: 'no-ai', sources, matchedVehicles: matches.map((v) => v.slug), fallback: true, fallbackReason: 'providers-unavailable', retryable: true, attemptedProviders: r.attemptedProviders };
   }
-  return { answer: noAiAnswer(matches), provider: 'no-ai', sources, matchedVehicles: matches.map((v) => v.slug), fallback: true };
+  return { answer: noAiAnswer(matches, question), provider: 'no-ai', sources, matchedVehicles: matches.map((v) => v.slug), fallback: true, fallbackReason: chain.length ? 'daily-cap-reached' : 'no-provider-configured', retryable: chain.length > 0, attemptedProviders: [] };
 }

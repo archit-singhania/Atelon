@@ -24,7 +24,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,webp,png}'],
         runtimeCaching: [
-          { urlPattern: /\/posters\/.*\.webp$/, handler: 'CacheFirst', options: { cacheName: 'posters', expiration: { maxEntries: 150 } } }
+          { urlPattern: /\/posters\/.*\.webp$/, handler: 'CacheFirst', options: { cacheName: 'posters-v1', expiration: { maxEntries: 150, maxAgeSeconds: 60 * 60 * 24 * 30 } } },
+          { urlPattern: /\/models\/.*\.glb$/, handler: 'CacheFirst', options: { cacheName: 'viewed-models-v1', expiration: { maxEntries: 6, maxAgeSeconds: 60 * 60 * 24 * 14, purgeOnQuotaError: true }, cacheableResponse: { statuses: [0, 200] } } },
+          { urlPattern: ({ url }) => url.pathname.startsWith('/api/'), handler: 'NetworkOnly' }
         ]
       }
     })
