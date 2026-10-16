@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const vdir = path.join(root, 'data', 'vehicles');
@@ -61,6 +62,13 @@ for (const f of files) {
     else {
       const p = path.join(root, 'apps', 'web', 'public', v.model3d.glb.replace(/^\//, ''));
       if (!fs.existsSync(p)) err(f, `GLB not found: ${v.model3d.glb}`);
+      else if (v.status === 'live') {
+        const bytes = fs.readFileSync(p);
+        const hash = createHash('sha256').update(bytes).digest('hex');
+        if (v.model3d.fileSizeBytes !== bytes.length) err(f, `model3d.fileSizeBytes does not match ${bytes.length}`);
+        if (String(v.model3d.optimizedHash).toLowerCase() !== hash) err(f, 'model3d.optimizedHash does not match public GLB');
+        if (bytes.length > 5 * 1024 * 1024) err(f, 'public GLB exceeds the 5 MiB hard limit');
+      }
     }
     if (!v.model3d?.credit) err(f, 'model3d.credit (attribution line) required');
     if (v.poster) {

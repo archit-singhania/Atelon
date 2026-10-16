@@ -1,6 +1,15 @@
 // Provider chain: Hugging Face -> Groq -> Cloudflare Workers AI -> (caller falls back to no-AI answer).
 // Endpoint paths verified against official provider documentation on 13 Oct 2026.
 const TIMEOUT_MS = 8000;
+const MAX_RESPONSE_BYTES = 64 * 1024;
+
+async function safeJson(res) {
+  const declared = Number(res.headers.get('content-length') || 0);
+  if (declared > MAX_RESPONSE_BYTES) throw new Error('response too large');
+  const raw = await res.text();
+  if (Buffer.byteLength(raw) > MAX_RESPONSE_BYTES) throw new Error('response too large');
+  return JSON.parse(raw);
+}
 
 async function openAiStyle(url, key, model, messages) {
   const res = await fetch(url, {
@@ -10,10 +19,10 @@ async function openAiStyle(url, key, model, messages) {
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  const data = await safeJson(res);
   const text = data?.choices?.[0]?.message?.content;
   if (!text) throw new Error('empty response');
-  return text.trim();
+  return text.trim().slice(0, 4000);
 }
 
 async function cloudflare(accountId, token, model, messages) {
@@ -24,10 +33,10 @@ async function cloudflare(accountId, token, model, messages) {
     signal: AbortSignal.timeout(TIMEOUT_MS)
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
+  const data = await safeJson(res);
   const text = data?.result?.response;
   if (!text) throw new Error('empty response');
-  return text.trim();
+  return text.trim().slice(0, 4000);
 }
 
 export function buildChain(env = process.env) {

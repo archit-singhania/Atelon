@@ -4,7 +4,7 @@ import type { Vehicle } from '../types';
 export const vehicles = raw as unknown as Vehicle[];
 export const bySlug = (slug?: string) => vehicles.find((v) => v.slug === slug);
 
-export const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:8787';
+export const API_URL: string = (import.meta.env.VITE_API_URL as string | undefined) ?? (import.meta.env.DEV ? 'http://localhost:8787' : '');
 
 export interface ChatReply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean; fallbackReason?: string | null; retryable?: boolean; attemptedProviders?: string[] }
 export async function ask(question: string): Promise<ChatReply> {

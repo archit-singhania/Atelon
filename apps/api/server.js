@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import rateLimit from '@fastify/rate-limit';
@@ -5,56 +6,37 @@ import { loadVehicles, search } from './src/data.js';
 import { buildChain } from './src/providers.js';
 import { answerQuestion, MAX_INPUT } from './src/chat.js';
 
-const app = Fastify({
-  ajv: { customOptions: { coerceTypes: false, removeAdditional: false } },
-  logger: {
-    serializers: {
-      req(request) { return { method: request.method, url: request.url }; },
-      res(reply) { return { statusCode: reply.statusCode }; }
-    }
-  }
-});
-const vehicles = loadVehicles(); // in memory, no database
-const chain = buildChain();
+export async function buildApp({ env = process.env, logger = true } = {}) {
+  if (env.NODE_ENV === 'production' && (!env.ALLOWED_ORIGIN || /localhost|127\.0\.0\.1/.test(env.ALLOWED_ORIGIN))) throw new Error('Production requires ALLOWED_ORIGIN with the public web origin.');
+  const app = Fastify({ bodyLimit: 16 * 1024, ajv: { customOptions: { coerceTypes: false, removeAdditional: false } }, logger: logger ? { serializers: {
+    req(request) { return { id: request.id, method: request.method, url: request.url }; },
+    res(reply) { return { statusCode: reply.statusCode }; }
+  } } : false });
+  const vehicles = loadVehicles();
+  const chain = buildChain(env);
+  const origins = (env.ALLOWED_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,https://localhost,capacitor://localhost').split(',').map((value) => value.trim()).filter(Boolean);
+  await app.register(cors, { origin: env.NODE_ENV === 'production' ? origins : [...origins, /^http:\/\/(localhost|127\.0\.0\.1):\d+$/] });
+  await app.register(rateLimit, { global: false });
+  app.addHook('onSend', async (_request, reply, payload) => {
+    reply.header('X-Content-Type-Options', 'nosniff').header('X-Frame-Options', 'DENY').header('Referrer-Policy', 'strict-origin-when-cross-origin').header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()').header('Cache-Control', 'no-store');
+    return payload;
+  });
+  app.setErrorHandler((error, request, reply) => {
+    const status = error.statusCode && error.statusCode >= 400 && error.statusCode < 600 ? error.statusCode : 500;
+    if (status >= 500) request.log.error({ err: error }, 'request failed');
+    reply.code(status).send({ error: { code: error.code || (status === 500 ? 'INTERNAL_ERROR' : 'INVALID_REQUEST'), message: status === 500 ? 'The service is temporarily unavailable.' : error.message }, requestId: request.id });
+  });
+  app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((provider) => provider.name), aiReady: chain.length > 0 }));
+  app.get('/api/status', async () => ({ catalogue: { vehicles: vehicles.length }, ai: { ready: chain.length > 0, providers: chain.map((provider) => provider.name), deterministicFallback: true } }));
+  app.get('/api/search', { schema: { querystring: { type: 'object', properties: { q: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (request) => ({ results: search(vehicles, String(request.query.q || '').slice(0, 100)) }));
+  app.get('/api/compare', { schema: { querystring: { type: 'object', required: ['a', 'b'], properties: { a: { type: 'string', maxLength: 100 }, b: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (request, reply) => {
+    const a = vehicles.find((vehicle) => vehicle.slug === request.query.a); const b = vehicles.find((vehicle) => vehicle.slug === request.query.b);
+    if (!a || !b) return reply.code(404).send({ error: { code: 'VEHICLE_NOT_FOUND', message: 'Vehicle not found.' }, requestId: request.id });
+    return { a, b };
+  });
+  app.post('/api/chat', { config: { rateLimit: { max: Number(env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } }, schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } } }, async (request) => answerQuestion({ vehicles, chain, question: request.body.question.trim(), log: request.log, env }));
+  return app;
+}
 
-const origins = (process.env.ALLOWED_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,https://localhost,capacitor://localhost')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-const corsOrigins = process.env.NODE_ENV === 'production' ? origins : [...origins, /^http:\/\/(localhost|127\.0\.0\.1):\d+$/];
-await app.register(cors, { origin: corsOrigins });
-await app.register(rateLimit, { global: false });
-
-app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((p) => p.name), aiReady: chain.length > 0 }));
-
-app.get('/api/status', async () => ({ catalogue: { vehicles: vehicles.length, updatedAt: new Date().toISOString() }, ai: { ready: chain.length > 0, providers: chain.map((p) => p.name), deterministicFallback: true } }));
-
-app.get('/api/search', { schema: { querystring: { type: 'object', properties: { q: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (req) => {
-  const q = String(req.query.q || '').slice(0, 100);
-  return { results: search(vehicles, q) };
-});
-
-app.get('/api/compare', { schema: { querystring: { type: 'object', required: ['a', 'b'], properties: { a: { type: 'string', maxLength: 100 }, b: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (req, reply) => {
-  const a = vehicles.find((v) => v.slug === req.query.a);
-  const b = vehicles.find((v) => v.slug === req.query.b);
-  if (!a || !b) return reply.code(404).send({ error: 'vehicle not found' });
-  return { a, b };
-});
-
-app.post(
-  '/api/chat',
-  {
-    config: { rateLimit: { max: Number(process.env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } },
-    schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } }
-  },
-  async (req, reply) => {
-    const question = String(req.body?.question || '').trim();
-    if (!question) return reply.code(400).send({ error: 'question required' });
-    if (question.length > MAX_INPUT) return reply.code(400).send({ error: `max ${MAX_INPUT} characters` });
-    return answerQuestion({ vehicles, chain, question, log: req.log });
-  }
-);
-
-const port = Number(process.env.PORT || 8787);
-await app.listen({ port, host: '0.0.0.0' });
+const directPath = process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`));
+if (directPath) { const app = await buildApp(); await app.listen({ port: Number(process.env.PORT || 8787), host: '0.0.0.0' }); }

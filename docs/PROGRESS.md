@@ -10,7 +10,7 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 
 ## Phase 1 — Product foundation and branding
 
-- [~] [CODE] Monorepo, environments, CI, approved logo masters and generated icons
+- [x] [CODE] Monorepo, environment templates, full web/API/Android CI, approved logo masters and generated icons
 - [ ] [YOU] Domain, real email, account setup, trademark checks and placeholder replacement
 - Deferred at owner request until contact and production details are available.
 
@@ -40,7 +40,7 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 
 ## Phase 5 — 3D viewer and showroom
 
-- [x] [CODE] Poster-first lazy viewer, bounds fitting, controls, fullscreen, conditional AR and failure handling
+- [x] [CODE] Poster-first lazy viewer, bounds fitting, controls, fullscreen, conditional AR, WebGL fallback and low-memory/Data Saver opt-in
 - [x] [CODE] Nine optimized GLBs (2.03–4.99 MiB), 18 posters and production Meshopt loading verified
 - [ ] [YOU] Test all models on a mid-range Android phone over throttled 4G
 
@@ -48,18 +48,18 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 
 - [x] [CODE] All routes, persistent Garage filters, sourced Compare, Ask AI, ledger-generated Credits, metadata and legal drafts
 - [x] [CODE] Nine live records, loading/error/empty/offline states, related vehicles and in-app 404 recovery
-- [~] [CODE] Vehicle metadata prerendering and release browser QA; true HTTP 404 depends on production host routing
+- [x] [CODE] Crawlable body prerendering for 19 routes, Open Graph, Vehicle JSON-LD, static HTTP 404 and production browser QA
 
 ## Phase 7 — Backend and grounded AI
 
-- [x] [CODE] Fastify API, validation, rate limits, provider chain, citations, status endpoint and structured fallback metadata
+- [x] [CODE] Fastify API, validation, security headers, bounded providers, rate limits, citations, stable errors and numeric-grounding guard
 - [ ] [YOU] Provider accounts, current model selection and server-side credentials
 - [x] [CODE] 51-question evaluation suite passes 51/51 against deterministic local fallback
 
 ## Phase 8 — PWA and Android
 
-- [x] [CODE] Manifest, adaptive branding, service worker, offline notices, poster/model caching and update tooling
-- [x] [CODE] Capacitor Android project, branded native assets, synchronized web build and debug APK compilation
+- [x] [CODE] Manifest shortcuts, install/update UI, adaptive branding, service worker cleanup, offline notices and bounded poster/model caching
+- [x] [CODE] Capacitor Android project, branded native assets, synchronized build, version automation, deep links, release shrinking, APK hashing and CI debug build
 - [ ] [YOU] Physical-device checks, keystore backup and signed APK release
 
 ## Phase 9 — Deployment, legal review and launch
@@ -71,3 +71,11 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 ## Phase 10 — Scale
 
 - [ ] Expand to 25, 50 and 100 only after the nine-vehicle pipeline passes every gate.
+
+## Code-owned release gates completed
+
+- [x] Strict validation checks GLB presence, size, optimized SHA-256, posters, specs and provenance fields
+- [x] Six API/AI regression tests pass, including invalid input, provider failure and fabricated-number rejection
+- [x] Production build, 19-route prerender, service worker generation and release artifact checks pass
+- [x] Seven-route headless browser suite passes mobile overflow, reduced motion, keyboard entry and manifest checks
+- [x] Architecture, contribution and release/rollback documentation is present

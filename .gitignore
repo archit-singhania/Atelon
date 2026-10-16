@@ -3,6 +3,8 @@ dist/
 .env
 .env.*
 !.env.example
+!apps/web/.env.production.example
+.browser-smoke-*/
 assets/raw/
 source-assets/
 *.keystore

@@ -1,6 +1,6 @@
 import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Bounds, ContactShadows, OrbitControls, useGLTF } from '@react-three/drei';
+import { Bounds, Clone, ContactShadows, OrbitControls, useGLTF, useProgress } from '@react-three/drei';
 import type { Group } from 'three';
 
 function Model({ url, scrollRotate }: { url: string; scrollRotate: boolean }) {
@@ -11,7 +11,7 @@ function Model({ url, scrollRotate }: { url: string; scrollRotate: boolean }) {
   });
   return (
     <group ref={group}>
-      <primitive object={scene} />
+      <Clone object={scene} deep />
     </group>
   );
 }
@@ -27,6 +27,15 @@ class ViewerBoundary extends Component<{ children: ReactNode }, { failed: boolea
   render() { return this.state.failed ? <div className="placeholder">The interactive model could not be loaded. The sourced specifications are still available below.</div> : this.props.children; }
 }
 
+function LoadingStatus() {
+  const { progress } = useProgress();
+  return <div className="model-loading" role="status">Preparing interactive 3D · {Math.round(progress)}%</div>;
+}
+
+function supportsWebGL() {
+  try { const canvas = document.createElement('canvas'); return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl')); } catch { return false; }
+}
+
 interface Props {
   url: string;
   poster?: string;
@@ -38,8 +47,13 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
   const [rotate, setRotate] = useState(true);
   const [ready, setReady] = useState(false);
   const [nearby, setNearby] = useState(false);
+  const [requested, setRequested] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const connection = typeof navigator !== 'undefined' ? (navigator as Navigator & { connection?: { saveData?: boolean } }).connection : undefined;
+  const memory = typeof navigator !== 'undefined' ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined;
+  const deferForDevice = Boolean(connection?.saveData || (memory && memory <= 4));
+  const webgl = typeof document === 'undefined' || supportsWebGL();
 
   useEffect(() => {
     const element = box.current;
@@ -52,7 +66,9 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
   return (
     <div ref={box} style={{ position: 'absolute', inset: 0 }}>
       {poster && !ready && <img src={poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />}
-      {nearby && <ViewerBoundary><Canvas camera={{ position: [3, 1.5, 4], fov: 40 }} dpr={[1, 1.75]} gl={{ powerPreference: 'high-performance', antialias: true }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
+      {!webgl && <div className="placeholder">Interactive 3D is unavailable in this browser. The poster and sourced specifications remain available.</div>}
+      {webgl && nearby && deferForDevice && !requested && <div className="model-consent"><button className="btn primary" type="button" onClick={() => setRequested(true)}>Load interactive 3D</button><small>Data Saver or a lower-memory device was detected.</small></div>}
+      {webgl && nearby && (!deferForDevice || requested) && <><LoadingStatus /><ViewerBoundary><Canvas camera={{ position: [3, 1.5, 4], fov: 40 }} dpr={memory && memory <= 4 ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: 'high-performance', antialias: !(memory && memory <= 4) }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
         <Suspense fallback={null}>
           <Bounds fit clip observe margin={1.4}>
             <Model url={url} scrollRotate={scrollRotate} />
@@ -75,7 +91,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
             onStart={() => setRotate(false)} // stop auto-rotate on touch / drag
           />
         )}
-      </Canvas></ViewerBoundary>}
+      </Canvas></ViewerBoundary></>}
       {fullscreenButton && (
         <button className="btn ghost" style={{ position: 'absolute', right: 8, bottom: 8, padding: '6px 12px', fontSize: 12 }} onClick={() => box.current?.requestFullscreen?.()}>
           Fullscreen

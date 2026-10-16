@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root = path.resolve(import.meta.dirname, '..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const [major, minor, patch] = packageJson.version.split('.').map(Number);
+const versionCode = major * 10000 + minor * 100 + patch;
+const file = path.join(root, 'apps', 'web', 'android', 'gradle.properties');
+let value = fs.readFileSync(file, 'utf8').replace(/^ATELON_VERSION_NAME=.*$/m, '').replace(/^ATELON_VERSION_CODE=.*$/m, '').trimEnd();
+value += `\nATELON_VERSION_NAME=${packageJson.version}\nATELON_VERSION_CODE=${versionCode}\n`;
+fs.writeFileSync(file, value);
+console.log(`Android version ${packageJson.version} (${versionCode})`);

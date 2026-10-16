@@ -13,6 +13,8 @@ npm run dev:api         # http://localhost:8787/health
 npm run dev:web         # http://localhost:5173
 npm run eval:make       # regenerate the 50 grounded chat cases
 npm run eval:chat       # run them against API_URL (defaults to localhost:8787)
+npm run verify          # strict data, API tests, production build, release artifact checks
+npm run test:browser    # seven-route mobile/keyboard/PWA smoke test (requires Chrome or Edge)
 ```
 
 ## Layout
@@ -28,6 +30,6 @@ npm run eval:chat       # run them against API_URL (defaults to localhost:8787)
 - Render: root directory `apps/api`, build `npm install`, start `node server.js`, health `/health`.
   (The plan said `npm ci`, but there is no lockfile inside `apps/api` with a workspaces repo, so `npm install` is safer.)
 
-Status and checklist: `docs/PROGRESS.md`. License rules: `docs/license-policy.md`.
+Architecture: `docs/architecture.md`. Release/rollback: `docs/release-runbook.md`. Status: `docs/PROGRESS.md`.
 
 The internal liquid-glass component gallery is available at `/design-system` in local and preview builds.

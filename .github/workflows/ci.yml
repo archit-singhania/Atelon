@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:strict
+      - run: npm test
+      - run: npm run build
+      - run: npm run release:check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atelon-web
+          path: apps/web/dist
+  android-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npm run android:version
+      - run: npm run cap:sync -w apps/web
+      - run: ./gradlew assembleDebug
+        working-directory: apps/web/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atelon-android-debug
+          path: apps/web/android/app/build/outputs/apk/debug/*.apk

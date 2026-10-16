@@ -14,6 +14,7 @@ import DesignQA from './pages/DesignQA';
 import ThemeToggle from './components/ThemeToggle';
 import OfflineNotice from './components/OfflineNotice';
 import NotFound from './pages/NotFound';
+import PwaControls from './components/PwaControls';
 const PosterStudio = lazy(() => import('./pages/PosterStudio'));
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <OfflineNotice />
+      <PwaControls />
       <header className="nav-wrap">
         <div className="nav glass-panel">
         <Link to="/" className="brand" aria-label="Atelon home">

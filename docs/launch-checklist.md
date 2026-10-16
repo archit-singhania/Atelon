@@ -1,17 +1,22 @@
-# Launch checklist (Phase 10 and 11)
+# Nine-vehicle showcase launch checklist
 
-## Before launch
-- [ ] `npm run validate:strict` passes (100 live vehicles, all specs sourced)
-- [ ] `npm run audit:licenses` passes; every CC BY credit shows on the Credits page
-- [ ] Replace placeholders in `apps/web/src/lib/site.ts` (domain, takedown email, GitHub suggestion URL)
-- [ ] Lawyer or IP clinic reviews Privacy, Terms and the vehicle/brand-rights question; required before ads, affiliates or payments
-- [ ] `npm run eval:chat` at 90%+; each fallback works when you deliberately break the one before it (wrong token)
-- [ ] Lighthouse mobile, keyboard navigation, Chrome / Safari / Firefox, a real Android phone and an iPhone
-- [ ] Every GLB loads in under 4 s on 4G
-- [ ] Soft launch to 20-30 people for a week; fix the top five issues
-- [ ] Public launch: 30-second screen recording; Reddit car/bike communities (follow rules), X, LinkedIn, Product Hunt, Indian vehicle forums
+## Automated gates
 
-## After launch
-- [ ] Add 20-50 vehicles a month (`npm run new-vehicle`)
-- [ ] Ask model creators for explicit permission
-- [ ] Upgrade triggers: any revenue means Vercel Pro; chat waits mean Render Starter; models over ~300 MB mean Cloudflare R2; more AI traffic means a paid tier
+- [x] `npm run verify` passes: strict data/assets, API/AI tests, TypeScript, production build and release artifacts
+- [x] `npm run test:browser` passes representative routes at mobile size, keyboard entry, reduced motion and PWA manifest checks
+- [x] Nine live records have sourced specs, posters, optimized GLBs under 5 MiB and matching SHA-256 values
+- [x] Crawlable HTML, structured vehicle data, static 404, security headers and bounded PWA caches are configured
+- [x] Android versioning, minification, resource shrinking, deep-link scheme, debug CI build and APK hash tooling are configured
+
+## Production and physical-world gates
+
+- [ ] Replace site/contact placeholders and set public `SITE_URL`, `VITE_API_URL` and exact `ALLOWED_ORIGIN`
+- [ ] Configure provider credentials and rerun `npm run eval:chat` against the deployed API
+- [ ] Complete any chosen rights/provenance review and final content review
+- [ ] Test Chrome, Safari and Firefox; install the PWA on Android and iPhone
+- [ ] Test all nine models on a mid-range Android device over throttled 4G
+- [ ] Generate and back up an Android signing keystore, then build/test a signed APK on two phones
+- [ ] Deploy API first, verify `/health`, deploy web, then run the smoke and rollback checks in `docs/release-runbook.md`
+- [ ] Soft-launch to 20–30 testers for one week and fix the highest-impact findings
+
+Scale to 25, 50 and 100 vehicles only after this showcase clears every production and device gate.
