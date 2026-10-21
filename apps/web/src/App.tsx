@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Garage from './pages/Garage';
@@ -15,10 +15,19 @@ import ThemeToggle from './components/ThemeToggle';
 import OfflineNotice from './components/OfflineNotice';
 import NotFound from './pages/NotFound';
 import PwaControls from './components/PwaControls';
+import CommandPalette from './components/CommandPalette';
+import MobileNav from './components/MobileNav';
+import Admin from './pages/Admin';
+import Account from './pages/Account';
+import { features } from './lib/features';
+import AmbientMotion from './components/AmbientMotion';
 const PosterStudio = lazy(() => import('./pages/PosterStudio'));
+const SpatialBackdrop = lazy(() => import('./components/SpatialBackdrop'));
 
 export default function App() {
   const location = useLocation();
+  const [spatialReady, setSpatialReady] = useState(false);
+  useEffect(() => { const timer = window.setTimeout(() => setSpatialReady(true), 900); return () => window.clearTimeout(timer); }, []);
   if (location.pathname.startsWith('/poster-studio/')) {
     return <Suspense fallback={null}><Routes><Route path="/poster-studio/:slug" element={<PosterStudio />} /></Routes></Suspense>;
   }
@@ -26,7 +35,10 @@ export default function App() {
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <OfflineNotice />
+      <AmbientMotion />
       <PwaControls />
+      <div className="spatial-backdrop spatial-static" aria-hidden="true" />
+      {features.spatialBackdrop && spatialReady && <Suspense fallback={null}><SpatialBackdrop /></Suspense>}
       <header className="nav-wrap">
         <div className="nav glass-panel">
         <Link to="/" className="brand" aria-label="Atelon home">
@@ -39,11 +51,13 @@ export default function App() {
           <NavLink to="/ask">Ask AI</NavLink>
           <NavLink to="/credits">Credits</NavLink>
           <NavLink to="/about">About</NavLink>
+          {features.accounts && <NavLink to="/account">My Garage</NavLink>}
         </nav>
         <ThemeToggle />
+        <CommandPalette />
         </div>
       </header>
-      <main id="main-content">
+      <main id="main-content" className="route-stage" key={location.pathname}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/garage" element={<Garage />} />
@@ -56,9 +70,12 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/suggest" element={<Suggest />} />
           <Route path="/design-system" element={<DesignQA />} />
+          {features.catalogueStudio && <Route path="/admin" element={<Admin />} />}
+          {features.accounts && <Route path="/account" element={<Account />} />}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      <MobileNav />
       <footer className="foot">
         Atelon is independent of all vehicle manufacturers. All brand names belong to their owners.
         <div><Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <Link to="/suggest">Suggest</Link></div>

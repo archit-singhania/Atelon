@@ -9,7 +9,7 @@ const tests = [];
 
 for (const vehicle of vehicles) {
   for (const spec of vehicle.specs.slice(0, 4)) {
-    tests.push({ question: `What is the ${spec.key.toLowerCase()} of the ${vehicle.make} ${vehicle.model}?`, mustInclude: [String(spec.value)], mustMatch: [vehicle.slug], mustHaveSources: true, category: 'specification' });
+    for (const question of [`What is the ${spec.key.toLowerCase()} of the ${vehicle.make} ${vehicle.model}?`, `Tell me the ${spec.key.toLowerCase()} for ${vehicle.make} ${vehicle.model}.`, `Do you have a sourced ${spec.key.toLowerCase()} figure for the ${vehicle.make} ${vehicle.model}?`, `From the Garage data, give me ${vehicle.make} ${vehicle.model} ${spec.key.toLowerCase()}.`]) tests.push({ question, mustInclude: [String(spec.value)], mustMatch: [vehicle.slug], mustHaveSources: true, category: 'specification' });
   }
 }
 for (const vehicle of vehicles.slice(0, 5)) {
@@ -30,6 +30,6 @@ for (const [a, b] of comparisons) {
 }
 tests.push({ question: 'What is the power of the Mazda Furai?', mustInclude: ["don't have that power data"], mustMatch: ['mazda-furai'], mustHaveSources: false, category: 'matched-vehicle-missing-field' });
 
-if (tests.length < 50) throw new Error(`Expected at least 50 evaluations, produced ${tests.length}`);
+if (tests.length < 150) throw new Error(`Expected at least 150 evaluations, produced ${tests.length}`);
 fs.writeFileSync(path.join(root, 'data', 'eval-questions.json'), JSON.stringify(tests, null, 2) + '\n');
 console.log(`Wrote ${tests.length} grounded chat evaluations.`);

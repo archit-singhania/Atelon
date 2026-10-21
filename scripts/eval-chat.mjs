@@ -6,17 +6,18 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const api = process.env.API_URL || 'http://localhost:8787';
+const api = process.env.API_URL;
 const tests = JSON.parse(fs.readFileSync(path.join(root, 'data', 'eval-questions.json'), 'utf8'));
+const localApp = api ? null : await (await import('../apps/api/server.js')).buildApp({ env: { CHAT_RATE_PER_HOUR: '1000', DAILY_CHAT_CAP: '1000' }, logger: false });
 
 let pass = 0;
 const report = ['question,passed,provider,answer'];
 for (const t of tests) {
   let ok = false, provider = '', answer = '';
   try {
-    const res = await fetch(`${api}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: t.question }) });
-    const data = await res.json();
-    answer = String(data.answer ?? data.error ?? ''); provider = data.provider ?? `HTTP ${res.status}`;
+    const res = api ? await fetch(`${api}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: t.question }) }) : await localApp.inject({ method: 'POST', url: '/api/chat', payload: { question: t.question } });
+    const data = api ? await res.json() : res.json();
+    answer = String(data.answer ?? data.error?.message ?? data.error ?? ''); provider = data.provider ?? `HTTP ${res.status ?? res.statusCode}`;
     const includes = t.mustInclude.every((s) => answer.toLowerCase().includes(s.toLowerCase()));
     const excludes = (t.mustNotInclude || []).every((s) => !answer.toLowerCase().includes(s.toLowerCase()));
     const matched = (t.mustMatch || []).every((slug) => (data.matchedVehicles || []).includes(slug));
@@ -30,6 +31,7 @@ for (const t of tests) {
   report.push([JSON.stringify(t.question), ok, provider, JSON.stringify(answer.replace(/\n/g, ' '))].join(','));
 }
 fs.writeFileSync(path.join(root, 'docs', 'eval-report.csv'), report.join('\n') + '\n');
+await localApp?.close();
 const pct = tests.length ? Math.round((pass / tests.length) * 100) : 0;
 console.log(`\n${pass}/${tests.length} passed (${pct}%). Report: docs/eval-report.csv`);
 process.exit(tests.length && pct >= 90 ? 0 : 1);

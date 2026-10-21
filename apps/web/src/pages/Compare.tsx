@@ -1,44 +1,20 @@
+import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
 import TierBadge from '../components/TierBadge';
+import { Glass, Segmented } from '../components/Glass';
 
+const slots = ['a', 'b', 'c', 'd'] as const;
 export default function Compare() {
-  useSeo('Compare vehicles | Atelon', 'Compare sourced vehicle specifications side by side.');
-  const [params, setParams] = useSearchParams();
-  const a = params.get('a') || '';
-  const b = params.get('b') || '';
-  const va = bySlug(a);
-  const vb = bySlug(b);
-  const set = (key: 'a' | 'b', value: string) => {
-    const next = new URLSearchParams(params);
-    if (value) next.set(key, value); else next.delete(key);
-    setParams(next, { replace: true });
-  };
-
-  const keys = [...new Set([...(va?.specs ?? []), ...(vb?.specs ?? [])].map((spec) => spec.key))];
-  const spec = (vehicle: typeof va, key: string) => vehicle?.specs.find((item) => item.key === key);
-  const picker = (label: string, value: string, key: 'a' | 'b', excluded: string) => (
-    <select aria-label={label} value={value} onChange={(event) => set(key, event.target.value)}>
-      <option value="">Choose a vehicle</option>
-      {vehicles.filter((vehicle) => vehicle.slug !== excluded).map((vehicle) => <option key={vehicle.slug} value={vehicle.slug}>{vehicle.make} {vehicle.model}</option>)}
-    </select>
-  );
-
-  return (
-    <div className="page">
-      <h1>Compare</h1>
-      <p className="lede">Put sourced factory figures side by side. Missing information stays visibly missing—Atelon never guesses.</p>
-      <div className="row compare-pickers">{picker('First vehicle', a, 'a', b)}<span aria-hidden="true">versus</span>{picker('Second vehicle', b, 'b', a)}</div>
-      {va && vb ? <>
-        <div className="compare-heads">
-          {[va, vb].map((vehicle) => <article className="card" key={vehicle.slug}>{vehicle.posterSmall && <img className="compare-poster" src={vehicle.posterSmall} alt="" />}<TierBadge tier={vehicle.tier} /><h2>{vehicle.make} {vehicle.model}</h2><p className="muted">{vehicle.generation}</p><Link to={`/vehicle/${vehicle.slug}`}>Open vehicle</Link></article>)}
-        </div>
-        {keys.length ? <table className="compare-table"><thead><tr><th>Specification</th><th>{va.make} {va.model}</th><th>{vb.make} {vb.model}</th></tr></thead><tbody>{keys.map((key) => {
-          const left = spec(va, key), right = spec(vb, key);
-          return <tr key={key}><th>{key}</th><td className={!left ? 'missing' : ''}>{left ? <>{String(left.value)}{left.unit ? ` ${left.unit}` : ''} <a className="source-link" href={left.source} target="_blank" rel="noreferrer">source</a></> : 'Not available'}</td><td className={!right ? 'missing' : ''}>{right ? <>{String(right.value)}{right.unit ? ` ${right.unit}` : ''} <a className="source-link" href={right.source} target="_blank" rel="noreferrer">source</a></> : 'Not available'}</td></tr>;
-        })}</tbody></table> : <div className="empty-state"><p className="muted">Neither vehicle has verified specifications.</p></div>}
-      </> : <div className="empty-state glass-panel"><h2>Choose two vehicles</h2><p className="muted">Your selection is saved in the URL, so this comparison can be bookmarked or shared.</p></div>}
-    </div>
-  );
+  useSeo('Compare up to four vehicles | Atelon', 'Compare sourced vehicle specifications with differences and normalized visual bars.');
+  const [params, setParams] = useSearchParams(); const [differences, setDifferences] = useState(false); const [units, setUnits] = useState('source');
+  const selected = slots.map((slot) => bySlug(params.get(slot) || '')).filter(Boolean) as typeof vehicles;
+  const set = (slot: typeof slots[number], slug: string) => { const next = new URLSearchParams(params); slug ? next.set(slot, slug) : next.delete(slot); setParams(next, { replace: true }); };
+  const keys = useMemo(() => [...new Set(selected.flatMap((vehicle) => vehicle.specs.map((spec) => spec.key)))].filter((key) => !differences || new Set(selected.map((vehicle) => String(vehicle.specs.find((spec) => spec.key === key)?.value ?? '—'))).size > 1), [selected.map((vehicle) => vehicle.slug).join(','), differences]);
+  const share = () => navigator.clipboard?.writeText(location.href);
+  return <div className="page compare-v2"><p className="eyebrow">Engineering desk</p><h1>Compare machines</h1><p className="lede">Place up to four vehicles side by side. Source values remain visible and missing figures are never estimated.</p>
+    <Glass className="compare-controls"><div className="compare-selectors">{slots.map((slot, index) => <label key={slot}><span>Machine {index + 1}</span><select value={params.get(slot) || ''} onChange={(event) => set(slot, event.target.value)}><option value="">Choose vehicle</option>{vehicles.filter((vehicle) => !selected.some((picked) => picked.slug === vehicle.slug) || vehicle.slug === params.get(slot)).map((vehicle) => <option key={vehicle.slug} value={vehicle.slug}>{vehicle.make} {vehicle.model}</option>)}</select></label>)}</div><div className="compare-options"><Segmented label="Units" value={units} onChange={setUnits} options={[{ value: 'source', label: 'Source units' }, { value: 'metric', label: 'Metric' }]} /><label className="switch"><input type="checkbox" checked={differences} onChange={(event) => setDifferences(event.target.checked)} /> Differences only</label><button className="btn ghost" type="button" onClick={share}>Copy comparison link</button></div></Glass>
+    {selected.length < 2 ? <Glass depth="dense" className="empty-state"><h2>Select at least two vehicles</h2><p className="muted">Selections live in the URL, so comparisons can be shared and restored.</p></Glass> : <><div className="compare-vehicle-grid">{selected.map((vehicle) => <Glass interactive className="compare-vehicle" key={vehicle.slug}>{vehicle.posterSmall && <img src={vehicle.posterSmall} alt="" />}<TierBadge tier={vehicle.tier} /><h2>{vehicle.make} <strong>{vehicle.model}</strong></h2><p>{vehicle.generation}</p><Link to={`/vehicle/${vehicle.slug}`}>Enter showroom →</Link></Glass>)}</div><div className="comparison-scroll"><table className="compare-matrix"><thead><tr><th>Specification</th>{selected.map((vehicle) => <th key={vehicle.slug}>{vehicle.make}<br />{vehicle.model}</th>)}</tr></thead><tbody>{keys.map((key) => { const values = selected.map((vehicle) => vehicle.specs.find((spec) => spec.key === key)); const numeric = values.map((spec) => Number(spec?.value)).filter(Number.isFinite); const max = Math.max(...numeric, 0); return <tr key={key}><th>{key}</th>{values.map((spec, index) => <td key={selected[index].slug} className={!spec ? 'missing' : ''}>{spec ? <><strong>{String(spec.value)} {spec.unit}</strong>{Number.isFinite(Number(spec.value)) && max > 0 && <span className="compare-mini-bar" style={{ width: `${Math.max(8, Number(spec.value) / max * 100)}%` }} />}<a href={spec.source} target="_blank" rel="noreferrer">source ↗</a></> : 'Not available'}</td>)}</tr>; })}</tbody></table></div></>}
+  </div>;
 }

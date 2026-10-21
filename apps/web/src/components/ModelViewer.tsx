@@ -24,7 +24,7 @@ function Ready({ onReady }: { onReady: () => void }) {
 class ViewerBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  render() { return this.state.failed ? <div className="placeholder">The interactive model could not be loaded. The sourced specifications are still available below.</div> : this.props.children; }
+  render() { return this.state.failed ? <div className="placeholder"><span>3D preview unavailable</span><small>The showroom poster and sourced specifications remain available.</small></div> : this.props.children; }
 }
 
 function LoadingStatus() {
@@ -41,9 +41,10 @@ interface Props {
   poster?: string;
   fullscreenButton?: boolean;
   scrollRotate?: boolean; // hero mode: rotate with scroll instead of free orbit
+  cameraPreset?: string;
 }
 
-export default function ModelViewer({ url, poster, fullscreenButton = false, scrollRotate = false }: Props) {
+export default function ModelViewer({ url, poster, fullscreenButton = false, scrollRotate = false, cameraPreset = 'hero' }: Props) {
   const [rotate, setRotate] = useState(true);
   const [ready, setReady] = useState(false);
   const [nearby, setNearby] = useState(false);
@@ -68,7 +69,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
       {poster && !ready && <img src={poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />}
       {!webgl && <div className="placeholder">Interactive 3D is unavailable in this browser. The poster and sourced specifications remain available.</div>}
       {webgl && nearby && deferForDevice && !requested && <div className="model-consent"><button className="btn primary" type="button" onClick={() => setRequested(true)}>Load interactive 3D</button><small>Data Saver or a lower-memory device was detected.</small></div>}
-      {webgl && nearby && (!deferForDevice || requested) && <><LoadingStatus /><ViewerBoundary><Canvas camera={{ position: [3, 1.5, 4], fov: 40 }} dpr={memory && memory <= 4 ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: 'high-performance', antialias: !(memory && memory <= 4) }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
+      {webgl && nearby && (!deferForDevice || requested) && <><LoadingStatus /><ViewerBoundary><Canvas camera={{ position: cameraPreset === 'side' ? [5, .8, .2] : cameraPreset === 'detail' ? [2.2, 1.1, 2.2] : [3, 1.5, 4], fov: cameraPreset === 'detail' ? 32 : 40 }} dpr={memory && memory <= 4 ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: 'high-performance', antialias: !(memory && memory <= 4) }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
         <Suspense fallback={null}>
           <Bounds fit clip observe margin={1.4}>
             <Model url={url} scrollRotate={scrollRotate} />

@@ -11,7 +11,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for DeLorean DMC-12 Time Machine.",
+    "mustInclude": [
+      "2.8L PRV V6"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "2.8L PRV V6"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me DeLorean DMC-12 Time Machine engine.",
+    "mustInclude": [
+      "2.8L PRV V6"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power (us specification) of the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "130 hp"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power (us specification) for DeLorean DMC-12 Time Machine.",
+    "mustInclude": [
+      "130 hp"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power (us specification) figure for the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "130 hp"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me DeLorean DMC-12 Time Machine power (us specification).",
     "mustInclude": [
       "130 hp"
     ],
@@ -33,7 +99,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the layout for DeLorean DMC-12 Time Machine.",
+    "mustInclude": [
+      "Rear-engine, rear-wheel drive"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced layout figure for the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "Rear-engine, rear-wheel drive"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me DeLorean DMC-12 Time Machine layout.",
+    "mustInclude": [
+      "Rear-engine, rear-wheel drive"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the wheelbase of the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "2,413 mm"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the wheelbase for DeLorean DMC-12 Time Machine.",
+    "mustInclude": [
+      "2,413 mm"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced wheelbase figure for the DeLorean DMC-12 Time Machine?",
+    "mustInclude": [
+      "2,413 mm"
+    ],
+    "mustMatch": [
+      "delorean-dmc-12-time-machine"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me DeLorean DMC-12 Time Machine wheelbase.",
     "mustInclude": [
       "2,413 mm"
     ],
@@ -55,7 +187,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for GMC Sierra 1500 AT4X.",
+    "mustInclude": [
+      "3.0L Duramax turbo-diesel inline-six"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "3.0L Duramax turbo-diesel inline-six"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me GMC Sierra 1500 AT4X engine.",
+    "mustInclude": [
+      "3.0L Duramax turbo-diesel inline-six"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "305 hp"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for GMC Sierra 1500 AT4X.",
+    "mustInclude": [
+      "305 hp"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "305 hp"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me GMC Sierra 1500 AT4X power.",
     "mustInclude": [
       "305 hp"
     ],
@@ -77,7 +275,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the torque for GMC Sierra 1500 AT4X.",
+    "mustInclude": [
+      "495 lb-ft"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced torque figure for the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "495 lb-ft"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me GMC Sierra 1500 AT4X torque.",
+    "mustInclude": [
+      "495 lb-ft"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the transmission of the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "10-speed automatic"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the transmission for GMC Sierra 1500 AT4X.",
+    "mustInclude": [
+      "10-speed automatic"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced transmission figure for the GMC Sierra 1500 AT4X?",
+    "mustInclude": [
+      "10-speed automatic"
+    ],
+    "mustMatch": [
+      "gmc-sierra-1500-at4x"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me GMC Sierra 1500 AT4X transmission.",
     "mustInclude": [
       "10-speed automatic"
     ],
@@ -99,7 +363,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Lamborghini Countach 5000 Quattrovalvole.",
+    "mustInclude": [
+      "5.2L naturally aspirated V12"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "5.2L naturally aspirated V12"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Lamborghini Countach 5000 Quattrovalvole engine.",
+    "mustInclude": [
+      "5.2L naturally aspirated V12"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the valvetrain of the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "Four valves per cylinder"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the valvetrain for Lamborghini Countach 5000 Quattrovalvole.",
+    "mustInclude": [
+      "Four valves per cylinder"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced valvetrain figure for the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "Four valves per cylinder"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Lamborghini Countach 5000 Quattrovalvole valvetrain.",
     "mustInclude": [
       "Four valves per cylinder"
     ],
@@ -121,7 +451,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the power (carburetted) for Lamborghini Countach 5000 Quattrovalvole.",
+    "mustInclude": [
+      "455 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power (carburetted) figure for the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "455 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Lamborghini Countach 5000 Quattrovalvole power (carburetted).",
+    "mustInclude": [
+      "455 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power (injection) of the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "420 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power (injection) for Lamborghini Countach 5000 Quattrovalvole.",
+    "mustInclude": [
+      "420 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power (injection) figure for the Lamborghini Countach 5000 Quattrovalvole?",
+    "mustInclude": [
+      "420 CV"
+    ],
+    "mustMatch": [
+      "lamborghini-countach-5000qv"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Lamborghini Countach 5000 Quattrovalvole power (injection).",
     "mustInclude": [
       "420 CV"
     ],
@@ -143,7 +539,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Mahindra Thar 4x4.",
+    "mustInclude": [
+      "1,997 cc mStallion turbo-petrol"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "1,997 cc mStallion turbo-petrol"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mahindra Thar 4x4 engine.",
+    "mustInclude": [
+      "1,997 cc mStallion turbo-petrol"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "112 kW / 150 bhp"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for Mahindra Thar 4x4.",
+    "mustInclude": [
+      "112 kW / 150 bhp"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "112 kW / 150 bhp"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mahindra Thar 4x4 power.",
     "mustInclude": [
       "112 kW / 150 bhp"
     ],
@@ -165,7 +627,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the torque for Mahindra Thar 4x4.",
+    "mustInclude": [
+      "320 Nm (automatic)"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced torque figure for the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "320 Nm (automatic)"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mahindra Thar 4x4 torque.",
+    "mustInclude": [
+      "320 Nm (automatic)"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the transmission of the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "6-speed automatic"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the transmission for Mahindra Thar 4x4.",
+    "mustInclude": [
+      "6-speed automatic"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced transmission figure for the Mahindra Thar 4x4?",
+    "mustInclude": [
+      "6-speed automatic"
+    ],
+    "mustMatch": [
+      "mahindra-thar-4x4"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mahindra Thar 4x4 transmission.",
     "mustInclude": [
       "6-speed automatic"
     ],
@@ -187,7 +715,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the debut for Mazda Furai.",
+    "mustInclude": [
+      "2008 North American International Auto Show"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced debut figure for the Mazda Furai?",
+    "mustInclude": [
+      "2008 North American International Auto Show"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mazda Furai debut.",
+    "mustInclude": [
+      "2008 North American International Auto Show"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the engine of the Mazda Furai?",
+    "mustInclude": [
+      "Three-rotor rotary"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the engine for Mazda Furai.",
+    "mustInclude": [
+      "Three-rotor rotary"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Mazda Furai?",
+    "mustInclude": [
+      "Three-rotor rotary"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mazda Furai engine.",
     "mustInclude": [
       "Three-rotor rotary"
     ],
@@ -209,7 +803,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the fuel for Mazda Furai.",
+    "mustInclude": [
+      "E100 ethanol"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced fuel figure for the Mazda Furai?",
+    "mustInclude": [
+      "E100 ethanol"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mazda Furai fuel.",
+    "mustInclude": [
+      "E100 ethanol"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the chassis of the Mazda Furai?",
+    "mustInclude": [
+      "Courage C65-derived competition chassis"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the chassis for Mazda Furai.",
+    "mustInclude": [
+      "Courage C65-derived competition chassis"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced chassis figure for the Mazda Furai?",
+    "mustInclude": [
+      "Courage C65-derived competition chassis"
+    ],
+    "mustMatch": [
+      "mazda-furai"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Mazda Furai chassis.",
     "mustInclude": [
       "Courage C65-derived competition chassis"
     ],
@@ -231,7 +891,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Nissan Skyline GT-R R34 — film replica.",
+    "mustInclude": [
+      "RB26DETT 2,568 cc twin-turbo inline-six"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "RB26DETT 2,568 cc twin-turbo inline-six"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Nissan Skyline GT-R R34 — film replica engine.",
+    "mustInclude": [
+      "RB26DETT 2,568 cc twin-turbo inline-six"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "206 kW / 280 PS at 6,800 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for Nissan Skyline GT-R R34 — film replica.",
+    "mustInclude": [
+      "206 kW / 280 PS at 6,800 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "206 kW / 280 PS at 6,800 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Nissan Skyline GT-R R34 — film replica power.",
     "mustInclude": [
       "206 kW / 280 PS at 6,800 rpm"
     ],
@@ -253,7 +979,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the torque for Nissan Skyline GT-R R34 — film replica.",
+    "mustInclude": [
+      "392 Nm at 4,400 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced torque figure for the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "392 Nm at 4,400 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Nissan Skyline GT-R R34 — film replica torque.",
+    "mustInclude": [
+      "392 Nm at 4,400 rpm"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the curb weight of the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "1,560 kg"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the curb weight for Nissan Skyline GT-R R34 — film replica.",
+    "mustInclude": [
+      "1,560 kg"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced curb weight figure for the Nissan Skyline GT-R R34 — film replica?",
+    "mustInclude": [
+      "1,560 kg"
+    ],
+    "mustMatch": [
+      "nissan-skyline-r34-brians"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Nissan Skyline GT-R R34 — film replica curb weight.",
     "mustInclude": [
       "1,560 kg"
     ],
@@ -275,7 +1067,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Plymouth Hemi 'Cuda.",
+    "mustInclude": [
+      "426 cu in / 7.0L Hemi V8"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "426 cu in / 7.0L Hemi V8"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Plymouth Hemi 'Cuda engine.",
+    "mustInclude": [
+      "426 cu in / 7.0L Hemi V8"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "425 hp at 5,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for Plymouth Hemi 'Cuda.",
+    "mustInclude": [
+      "425 hp at 5,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "425 hp at 5,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Plymouth Hemi 'Cuda power.",
     "mustInclude": [
       "425 hp at 5,000 rpm"
     ],
@@ -297,7 +1155,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the torque for Plymouth Hemi 'Cuda.",
+    "mustInclude": [
+      "490 lb-ft at 4,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced torque figure for the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "490 lb-ft at 4,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Plymouth Hemi 'Cuda torque.",
+    "mustInclude": [
+      "490 lb-ft at 4,000 rpm"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the transmission of the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the transmission for Plymouth Hemi 'Cuda.",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced transmission figure for the Plymouth Hemi 'Cuda?",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "plymouth-hemi-cuda-1971"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Plymouth Hemi 'Cuda transmission.",
     "mustInclude": [
       "4-speed manual"
     ],
@@ -319,7 +1243,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Porsche 911 Turbo 3.0 (930).",
+    "mustInclude": [
+      "2,994 cc turbocharged flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "2,994 cc turbocharged flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Turbo 3.0 (930) engine.",
+    "mustInclude": [
+      "2,994 cc turbocharged flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "191 kW / 260 PS"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for Porsche 911 Turbo 3.0 (930).",
+    "mustInclude": [
+      "191 kW / 260 PS"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "191 kW / 260 PS"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Turbo 3.0 (930) power.",
     "mustInclude": [
       "191 kW / 260 PS"
     ],
@@ -341,7 +1331,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the transmission for Porsche 911 Turbo 3.0 (930).",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced transmission figure for the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Turbo 3.0 (930) transmission.",
+    "mustInclude": [
+      "4-speed manual"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the top speed of the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "250 km/h"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the top speed for Porsche 911 Turbo 3.0 (930).",
+    "mustInclude": [
+      "250 km/h"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced top speed figure for the Porsche 911 Turbo 3.0 (930)?",
+    "mustInclude": [
+      "250 km/h"
+    ],
+    "mustMatch": [
+      "porsche-911-930-turbo-1975"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Turbo 3.0 (930) top speed.",
     "mustInclude": [
       "250 km/h"
     ],
@@ -363,7 +1419,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the engine for Porsche 911 Carrera 4S Cabriolet.",
+    "mustInclude": [
+      "2,981 cc twin-turbo flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced engine figure for the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "2,981 cc twin-turbo flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Carrera 4S Cabriolet engine.",
+    "mustInclude": [
+      "2,981 cc twin-turbo flat-six"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the power of the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "331 kW / 450 PS at 6,500 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the power for Porsche 911 Carrera 4S Cabriolet.",
+    "mustInclude": [
+      "331 kW / 450 PS at 6,500 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced power figure for the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "331 kW / 450 PS at 6,500 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Carrera 4S Cabriolet power.",
     "mustInclude": [
       "331 kW / 450 PS at 6,500 rpm"
     ],
@@ -385,7 +1507,73 @@
     "category": "specification"
   },
   {
+    "question": "Tell me the torque for Porsche 911 Carrera 4S Cabriolet.",
+    "mustInclude": [
+      "530 Nm at 2,300–5,000 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced torque figure for the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "530 Nm at 2,300–5,000 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Carrera 4S Cabriolet torque.",
+    "mustInclude": [
+      "530 Nm at 2,300–5,000 rpm"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
     "question": "What is the transmission of the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "8-speed PDK"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Tell me the transmission for Porsche 911 Carrera 4S Cabriolet.",
+    "mustInclude": [
+      "8-speed PDK"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "Do you have a sourced transmission figure for the Porsche 911 Carrera 4S Cabriolet?",
+    "mustInclude": [
+      "8-speed PDK"
+    ],
+    "mustMatch": [
+      "porsche-911-carrera-4s"
+    ],
+    "mustHaveSources": true,
+    "category": "specification"
+  },
+  {
+    "question": "From the Garage data, give me Porsche 911 Carrera 4S Cabriolet transmission.",
     "mustInclude": [
       "8-speed PDK"
     ],

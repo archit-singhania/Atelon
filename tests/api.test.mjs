@@ -36,3 +36,20 @@ test('invalid inputs use a stable error shape', async (t) => {
 test('production refuses a missing or local-only allowed origin', async () => {
   await assert.rejects(() => buildApp({ env: { NODE_ENV: 'production' }, logger: false }), /ALLOWED_ORIGIN/);
 });
+
+test('v2 catalogue, readiness and local collection ownership', async (t) => {
+  const app = await buildApp({ env: {}, logger: false }); t.after(() => app.close());
+  const ready = await app.inject({ method: 'GET', url: '/ready' }); assert.deepEqual(ready.json(), { status: 'ready', catalogue: true, persistence: 'local' });
+  const catalogue = await app.inject({ method: 'GET', url: '/api/v2/catalogue?limit=2' }); assert.equal(catalogue.json().results.length, 2); assert.equal(catalogue.json().nextCursor, 2);
+  const created = await app.inject({ method: 'POST', url: '/api/v2/collections', headers: { 'x-atelon-session': 'owner-a' }, payload: { name: 'Dream garage', visibility: 'private', vehicle_slugs: ['mahindra-thar-4x4'] } });
+  assert.equal(created.statusCode, 201); const id = created.json().id;
+  const own = await app.inject({ method: 'GET', url: '/api/v2/collections', headers: { 'x-atelon-session': 'owner-a' } }); assert.equal(own.json().results.length, 1);
+  const other = await app.inject({ method: 'GET', url: '/api/v2/collections', headers: { 'x-atelon-session': 'owner-b' } }); assert.equal(other.json().results.length, 0);
+  const forbidden = await app.inject({ method: 'DELETE', url: `/api/v2/collections/${id}`, headers: { 'x-atelon-session': 'owner-b' } }); assert.equal(forbidden.statusCode, 404);
+});
+
+test('streaming chat emits grounded SSE event types', async (t) => {
+  const app = await buildApp({ env: {}, logger: false }); t.after(() => app.close());
+  const response = await app.inject({ method: 'POST', url: '/api/v2/chat/stream', payload: { question: 'Tell me about the Mazda Furai' } });
+  assert.equal(response.statusCode, 200); assert.match(response.headers['content-type'], /text\/event-stream/); assert.match(response.body, /event: status/); assert.match(response.body, /event: matched_vehicle/); assert.match(response.body, /event: done/);
+});

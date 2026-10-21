@@ -5,56 +5,13 @@ import { useSeo } from '../lib/useSeo';
 import FeaturedCarousel from '../components/FeaturedCarousel';
 import SpecRace from '../components/SpecRace';
 import ChatDemo from '../components/ChatDemo';
-
+import { Glass } from '../components/Glass';
 const ModelViewer = lazy(() => import('../components/ModelViewer'));
 
 export default function Landing() {
-  useSeo('Atelon - every machine in 3D', 'Atelon is an AI vehicle atlas for cars and motorcycles, with honest 3D labels and sourced specs.');
-  const withModels = vehicles.filter((v) => v.tier !== 'specs-only' && v.model3d);
-  const [i, setI] = useState(0);
-
-  useEffect(() => {
-    if (withModels.length < 2) return;
-    const t = setInterval(() => setI((n) => (n + 1) % withModels.length), 8000);
-    return () => clearInterval(t);
-  }, [withModels.length]);
-
-  const current = withModels[i];
-
-  return (
-    <>
-      <section className="hero">
-        <div>
-          <div className="viewer">
-            {current?.model3d ? (
-              <Suspense fallback={<div className="placeholder">Loading 3D...</div>}>
-                <ModelViewer key={current.slug} url={current.model3d.glb} poster={current.poster} scrollRotate />
-              </Suspense>
-            ) : (
-              <div className="placeholder">3D showroom opens once the first licensed models are added.</div>
-            )}
-          </div>
-          <h1>Every machine. In 3D.</h1>
-          <p>Atelon is an AI vehicle atlas for cars and motorcycles, with honest labels on every model and a source for every number.</p>
-          <Link to="/garage" className="btn primary">Explore the Garage</Link>
-          <Link to="/ask" className="btn ghost">Ask the AI</Link>
-        </div>
-      </section>
-
-      <FeaturedCarousel />
-      <SpecRace />
-
-      <section className="page">
-        <h2>Honest by design</h2>
-        <p className="muted">Every vehicle shows how much we can stand behind its 3D model.</p>
-        <div className="tiers">
-          <div className="card glass"><span className="badge full">Full 3D</span><p>The exact vehicle model, with verified permissions and credit.</p></div>
-          <div className="card glass"><span className="badge reference">Reference 3D</span><p>A clearly labelled representative model. Never passed off as the exact vehicle.</p></div>
-          <div className="card glass"><span className="badge">Specs only</span><p>Complete, sourced information when no suitable 3D model exists.</p></div>
-        </div>
-      </section>
-
-      <ChatDemo />
-    </>
-  );
+  useSeo('Atelon — the cinematic machine atlas', 'Explore iconic machines through adaptive 3D, sourced engineering data and grounded AI.'); const withModels = vehicles.filter((vehicle) => vehicle.model3d && vehicle.tier !== 'specs-only'); const [index, setIndex] = useState(0); const current = withModels[index];
+  useEffect(() => { if (withModels.length < 2) return; const timer = setInterval(() => setIndex((value) => (value + 1) % withModels.length), 9000); return () => clearInterval(timer); }, [withModels.length]);
+  return <><section className="cinematic-hero"><div className="hero-copy"><p className="eyebrow">A living archive of machines</p><h1>Engineering,<br /><strong>made spatial.</strong></h1><p>Explore iconic vehicles through adaptive 3D, sourced specifications and an AI that knows when the data stops.</p><div><Link to="/garage" className="btn primary">Enter the Garage</Link><Link to="/ask" className="btn ghost">Ask Atelon AI</Link></div><div className="hero-proof"><span><b>{vehicles.length}</b> curated machines</span><span><b>{vehicles.reduce((sum, vehicle) => sum + vehicle.specs.length, 0)}</b> sourced facts</span><span><b>0</b> invented figures</span></div></div><div className="hero-machine"><div className="hero-orbit" /><div className="viewer">{current?.model3d ? <Suspense fallback={<img src={current.poster} alt="" />}><ModelViewer key={current.slug} url={current.model3d.glb} poster={current.poster} scrollRotate /></Suspense> : null}</div>{current && <Glass depth="thin" className="hero-machine-label"><span>{String(index + 1).padStart(2, '0')} / {String(withModels.length).padStart(2, '0')}</span><strong>{current.make} {current.model}</strong><Link to={`/vehicle/${current.slug}`}>Open showroom →</Link></Glass>}</div><a className="scroll-cue" href="#story">Scroll to explore <span>↓</span></a></section>
+    <section id="story" className="spatial-story page"><div className="story-intro"><p className="eyebrow">Designed for curiosity</p><h2>Not a list.<br />A way into the machine.</h2></div><div className="story-panels"><Glass interactive depth="thin"><span>01</span><h3>See the form</h3><p>Poster-first adaptive 3D scales from cinematic desktops to battery-conscious mobile devices.</p></Glass><Glass interactive depth="regular"><span>02</span><h3>Study the engineering</h3><p>Every displayed figure maps to a source. Missing information stays visibly missing.</p></Glass><Glass interactive depth="dense"><span>03</span><h3>Ask with confidence</h3><p>Atelon AI answers from matched Garage records and rejects unsupported numeric claims.</p></Glass></div></section>
+    <FeaturedCarousel /><section className="engineering-band"><div className="page"><p className="eyebrow">Engineering desk</p><h2>Numbers gain meaning<br />when they move together.</h2><SpecRace /></div></section><section className="page trust-section"><div><p className="eyebrow">Transparent by default</p><h2>Beautiful, without pretending.</h2><p className="lede">Every 3D experience declares its confidence tier and every specification exposes its source.</p></div><div className="tiers"><Glass interactive depth="regular"><span className="badge full">Full 3D</span><p>The exact vehicle model with verified provenance.</p></Glass><Glass interactive depth="regular"><span className="badge reference">Reference 3D</span><p>A clearly labelled visual reference, never represented as exact.</p></Glass><Glass interactive depth="regular"><span className="badge">Specs only</span><p>Verified information remains useful without a visual asset.</p></Glass></div></section><ChatDemo /><section className="final-cta"><p className="eyebrow">Your next machine is waiting</p><h2>Enter the atlas.</h2><Link className="btn primary" to="/garage">Explore every vehicle</Link></section></>;
 }

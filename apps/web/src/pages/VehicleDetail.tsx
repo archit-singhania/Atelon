@@ -1,68 +1,24 @@
-import { lazy, Suspense } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
 import TierBadge from '../components/TierBadge';
-
-const ModelViewer = lazy(() => import('../components/ModelViewer'));
-const ArButton = lazy(() => import('../components/ArButton'));
+import { Glass, Segmented } from '../components/Glass';
+import { readGarage, toggleGarage } from '../lib/garage';
+const ModelViewer = lazy(() => import('../components/ModelViewer')); const ArButton = lazy(() => import('../components/ArButton'));
 
 export default function VehicleDetail() {
-  const { slug } = useParams();
-  const v = bySlug(slug);
-  useSeo(
-    v ? `${v.make} ${v.model} - specs and 3D | Atelon` : 'Vehicle not found | Atelon',
-    v ? `${v.make} ${v.model}: sourced specifications${v.tier !== 'specs-only' ? ' and an interactive 3D model' : ''} on Atelon.` : 'Vehicle not found.'
-  );
-
-  if (!v) return <div className="page"><h1>Vehicle not found</h1><Link to="/garage">Back to the Garage</Link></div>;
-  const has3d = v.model3d && v.tier !== 'specs-only';
-  const related = vehicles.filter((item) => item.slug !== v.slug && (item.make === v.make || item.type === v.type)).slice(0, 3);
-
-  return (
-    <div className="page">
-      <TierBadge tier={v.tier} />
-      <h1 style={{ marginTop: 10 }}>{v.make} {v.model}</h1>
-      <p className="muted">{v.type} · {v.years[0]}-{v.years[1] ?? 'present'}{v.generation ? ` · ${v.generation}` : ''}</p>
-
-      <div className="viewer big">
-        {has3d ? (
-          <Suspense fallback={<div className="placeholder">Loading 3D...</div>}>
-            <ModelViewer url={v.model3d!.glb} poster={v.poster} fullscreenButton />
-          </Suspense>
-        ) : (
-          <div className="placeholder">
-            {v.poster ? <img src={v.poster} alt="" style={{ maxHeight: '100%' }} /> : 'No licensed 3D model for this vehicle yet. Specifications only.'}
-          </div>
-        )}
-      </div>
-      {v.tier === 'reference' && <p className="muted">Reference 3D: a representative model, not the exact vehicle.</p>}
-      {v.model3d && <p className="muted" style={{ fontSize: 12 }}>{v.model3d.credit}</p>}
-      {has3d && (
-        <Suspense fallback={null}>
-          <ArButton glb={v.model3d!.glb} name={`${v.make} ${v.model}`} />
-        </Suspense>
-      )}
-      {related.length > 0 && <section className="related"><h2>Explore next</h2><div className="grid">{related.map((item) => <Link className="card" key={item.slug} to={`/vehicle/${item.slug}`}>{item.posterSmall && <img className="garage-poster" src={item.posterSmall} alt="" loading="lazy" />}<h3>{item.make} {item.model}</h3><small>{item.generation}</small></Link>)}</div></section>}
-
-      <p>{v.summary}</p>
-
-      <h2>Specifications</h2>
-      {v.specs.length === 0 ? (
-        <p className="muted">No verified specifications yet.</p>
-      ) : (
-        <table>
-          <tbody>
-            {v.specs.map((s) => (
-              <tr key={s.key}>
-                <th>{s.key}</th>
-                <td>{String(s.value)}{s.unit ? ` ${s.unit}` : ''}</td>
-                <td><a href={s.source} target="_blank" rel="noreferrer">source</a></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+  const { slug } = useParams(); const [params, setParams] = useSearchParams(); const vehicle = bySlug(slug); const [sourcesOpen, setSourcesOpen] = useState(false); const [tour, setTour] = useState(0); const [saved, setSaved] = useState(() => Boolean(slug && readGarage().includes(slug)));
+  const camera = params.get('view') || 'hero'; const scene = params.get('scene') || 'studio';
+  useSeo(vehicle ? `${vehicle.make} ${vehicle.model} - specs and 3D | Atelon` : 'Vehicle not found | Atelon', vehicle ? `${vehicle.make} ${vehicle.model}: sourced specifications and a cinematic 3D experience.` : 'Vehicle not found.');
+  useEffect(() => { if (!vehicle) return; try { const recent: string[] = JSON.parse(localStorage.getItem('atelon-recent') || '[]'); localStorage.setItem('atelon-recent', JSON.stringify([vehicle.slug, ...recent.filter((item) => item !== vehicle.slug)].slice(0, 20))); } catch {} }, [vehicle?.slug]);
+  const related = useMemo(() => vehicle ? vehicles.filter((item) => item.slug !== vehicle.slug && (item.make === vehicle.make || item.type === vehicle.type)).slice(0, 3) : [], [vehicle]);
+  if (!vehicle) return <div className="page"><h1>Vehicle not found</h1><Link to="/garage">Back to the Garage</Link></div>;
+  const has3d = vehicle.model3d && vehicle.tier !== 'specs-only'; const change = (key: string, value: string) => { const next = new URLSearchParams(params); next.set(key, value); setParams(next, { replace: true }); };
+  const tourNotes = [`Meet the ${vehicle.make} ${vehicle.model}. Drag to inspect every angle.`, vehicle.summary, `${vehicle.specs.length} sourced specifications are available below.`];
+  return <div className={`vehicle-page scene-${scene}`}><section className="vehicle-hero"><div className="vehicle-title"><TierBadge tier={vehicle.tier} /><p className="eyebrow">{vehicle.generation}</p><h1>{vehicle.make}<br /><strong>{vehicle.model}</strong></h1><p>{vehicle.years[0]}–{vehicle.years[1] ?? 'present'} · {vehicle.type}</p></div><div className="viewer vehicle-showroom">{has3d ? <Suspense fallback={<div className="placeholder">Composing showroom…</div>}><ModelViewer key={`${vehicle.slug}-${camera}`} url={vehicle.model3d!.glb} poster={vehicle.poster} fullscreenButton cameraPreset={camera} /></Suspense> : <img className="showroom-poster" src={vehicle.poster} alt={`${vehicle.make} ${vehicle.model}`} />}<div className="model-hotspots" aria-label="Vehicle highlights"><button style={{ left: '23%', top: '48%' }} title="Open specifications">01</button><button style={{ right: '25%', top: '38%' }} title="View provenance">02</button></div></div><Glass depth="regular" className="showroom-toolbar"><Segmented label="Camera view" value={camera} onChange={(value) => change('view', value)} options={[{ value: 'hero', label: 'Hero' }, { value: 'side', label: 'Profile' }, { value: 'detail', label: 'Detail' }]} /><Segmented label="Showroom environment" value={scene} onChange={(value) => change('scene', value)} options={[{ value: 'studio', label: 'Studio' }, { value: 'night', label: 'Night' }, { value: 'pearl', label: 'Pearl' }]} /><button className="btn ghost" onClick={() => setTour((value) => (value + 1) % tourNotes.length)}>Guided tour {tour + 1}/{tourNotes.length}</button></Glass><Glass depth="thin" className="tour-note"><span>{String(tour + 1).padStart(2, '0')}</span><p>{tourNotes[tour]}</p></Glass></section>
+    <div className="page vehicle-content"><aside className="spec-dock glass-dense"><strong>Machine index</strong><button onClick={() => { setSaved(toggleGarage(vehicle.slug).includes(vehicle.slug)); }}>{saved ? 'Saved to Garage ✓' : 'Save to My Garage'}</button><a href="#story">Story</a><a href="#specifications">Specifications</a><button onClick={() => setSourcesOpen(true)}>Sources & provenance</button>{has3d && <Suspense fallback={null}><ArButton glb={vehicle.model3d!.glb} name={`${vehicle.make} ${vehicle.model}`} /></Suspense>}</aside><article><section id="story"><p className="eyebrow">Context</p><h2>A machine worth studying</h2><p className="vehicle-summary">{vehicle.summary}</p>{vehicle.tier === 'reference' && <div className="notice warning">Reference 3D: this visual is representative and is not asserted as the exact production vehicle.</div>}</section><section id="specifications" className="spec-section"><p className="eyebrow">Verified data</p><h2>Specifications</h2><div className="spec-card-grid">{vehicle.specs.map((spec) => <Glass key={spec.key} depth="thin" className="spec-card"><small>{spec.key}</small><strong>{String(spec.value)} <em>{spec.unit}</em></strong><a href={spec.source} target="_blank" rel="noreferrer">Source ↗</a></Glass>)}</div></section></article></div>
+    <section className="page related"><h2>Continue exploring</h2><div className="grid">{related.map((item) => <Link className="vehicle-tile glass-regular" key={item.slug} to={`/vehicle/${item.slug}`}>{item.posterSmall && <img className="garage-poster" src={item.posterSmall} alt="" loading="lazy" />}<h3>{item.make} {item.model}</h3><small>{item.generation}</small></Link>)}</div></section>
+    {sourcesOpen && <div className="sheet-scrim" onMouseDown={(event) => event.target === event.currentTarget && setSourcesOpen(false)}><aside className="source-sheet glass-dense" role="dialog" aria-modal="true" aria-label="Sources and provenance"><button className="sheet-close" onClick={() => setSourcesOpen(false)}>Close ×</button><p className="eyebrow">Trust record</p><h2>Sources & provenance</h2>{vehicle.model3d && <dl><dt>3D credit</dt><dd>{vehicle.model3d.credit}</dd><dt>Review</dt><dd>{vehicle.model3d.reviewer}</dd><dt>Optimized size</dt><dd>{(vehicle.model3d.fileSizeBytes! / 1048576).toFixed(2)} MiB</dd><dt>Triangles</dt><dd>{vehicle.model3d.triangleCount?.toLocaleString()}</dd></dl>}<h3>Specification sources</h3>{[...new Set(vehicle.specs.map((spec) => spec.source))].map((source) => <a className="source-record" href={source} target="_blank" rel="noreferrer" key={source}>{new URL(source).hostname} ↗</a>)}</aside></div>}
+  </div>;
 }

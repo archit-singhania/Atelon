@@ -16,6 +16,7 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run release:check
+      - run: npm run performance:check
       - uses: actions/upload-artifact@v4
         with:
           name: atelon-web

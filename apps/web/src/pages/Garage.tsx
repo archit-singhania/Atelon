@@ -1,70 +1,30 @@
-import { useMemo } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { vehicles } from '../lib/data';
 import TierBadge from '../components/TierBadge';
+import { Glass, Segmented } from '../components/Glass';
+import { useSeo } from '../lib/useSeo';
+
+type View = 'grid' | 'list' | 'cinematic';
+type Sort = 'featured' | 'year' | 'power' | 'weight' | 'recent';
+const numericSpec = (vehicle: typeof vehicles[number], needle: string) => Number(vehicle.specs.find((spec) => spec.key.toLowerCase().includes(needle))?.value) || 0;
 
 export default function Garage() {
-  const [params, setParams] = useSearchParams();
-  const q = params.get('q') || '';
-  const type = (params.get('type') || 'all') as 'all' | 'car' | 'motorcycle';
-  const tier = (params.get('tier') || 'all') as 'all' | 'full' | 'reference' | 'specs-only';
-  const make = params.get('make') || 'all';
+  useSeo('Garage | Atelon', 'Search, filter and explore the Atelon cinematic vehicle catalogue.');
+  const [params, setParams] = useSearchParams(); const [saved, setSaved] = useState(() => localStorage.getItem('atelon-saved-search') === params.toString());
+  const q = params.get('q') || ''; const type = params.get('type') || 'all'; const tier = params.get('tier') || 'all'; const selectedMakes = params.get('makes')?.split(',').filter(Boolean) || []; const sort = (params.get('sort') || 'featured') as Sort; const view = (params.get('view') || 'grid') as View;
   const makes = [...new Set(vehicles.map((vehicle) => vehicle.make))].sort();
-  const update = (key: string, value: string) => {
-    const next = new URLSearchParams(params);
-    if (!value || value === 'all') next.delete(key); else next.set(key, value);
-    setParams(next, { replace: true });
-  };
-
+  const update = (key: string, value: string) => { const next = new URLSearchParams(params); if (!value || value === 'all' || value === 'grid') next.delete(key); else next.set(key, value); setParams(next, { replace: true }); setSaved(false); };
+  const toggleMake = (make: string) => update('makes', selectedMakes.includes(make) ? selectedMakes.filter((item) => item !== make).join(',') : [...selectedMakes, make].join(','));
+  const recent: string[] = (() => { try { return JSON.parse(localStorage.getItem('atelon-recent') || '[]'); } catch { return []; } })();
   const list = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    return vehicles.filter(
-      (v) =>
-        (type === 'all' || v.type === type) &&
-        (tier === 'all' || v.tier === tier) &&
-        (make === 'all' || v.make === make) &&
-        (!needle || `${v.make} ${v.model} ${v.generation ?? ''}`.toLowerCase().includes(needle))
-    );
-  }, [q, type, tier, make]);
-
-  return (
-    <div className="page">
-      <h1>Garage</h1>
-      <p className="lede">Explore nine sourced vehicles with poster-first 3D and transparent model-confidence labels.</p>
-      <div className="row filter-bar" role="search">
-        <input aria-label="Search vehicles" placeholder="Search make or model" value={q} onChange={(e) => update('q', e.target.value)} />
-        <select aria-label="Vehicle type" value={type} onChange={(e) => update('type', e.target.value)}>
-          <option value="all">Cars and motorcycles</option>
-          <option value="car">Cars</option>
-          <option value="motorcycle">Motorcycles</option>
-        </select>
-        <select aria-label="3D tier" value={tier} onChange={(e) => update('tier', e.target.value)}>
-          <option value="all">Any 3D tier</option>
-          <option value="full">Full 3D</option>
-          <option value="reference">Reference 3D</option>
-          <option value="specs-only">Specs only</option>
-        </select>
-        <select aria-label="Vehicle make" value={make} onChange={(e) => update('make', e.target.value)}>
-          <option value="all">All makes</option>
-          {makes.map((item) => <option key={item} value={item}>{item}</option>)}
-        </select>
-        {(q || type !== 'all' || tier !== 'all' || make !== 'all') && <button className="btn ghost" type="button" onClick={() => setParams({}, { replace: true })}>Reset filters</button>}
-      </div>
-      <p className="result-count" aria-live="polite">{list.length} {list.length === 1 ? 'vehicle' : 'vehicles'}</p>
-      {list.length === 0 ? (
-        <div className="empty-state glass-panel"><h2>No matching vehicles</h2><p className="muted">Try a broader search or reset the filters.</p><button className="btn primary" type="button" onClick={() => setParams({}, { replace: true })}>Show every vehicle</button></div>
-      ) : (
-        <div className="grid">
-          {list.map((v) => (
-            <Link key={v.slug} to={`/vehicle/${v.slug}`} className="card">
-              {v.posterSmall && <img className="garage-poster" src={v.posterSmall} alt="" loading="lazy" />}
-              <TierBadge tier={v.tier} />
-              <h3 style={{ marginTop: 10 }}>{v.make} {v.model}</h3>
-              <small>{v.type} · {v.years[0]}-{v.years[1] ?? 'present'}</small>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    const needle = q.trim().toLowerCase(); const filtered = vehicles.filter((vehicle) => (type === 'all' || vehicle.type === type) && (tier === 'all' || vehicle.tier === tier) && (!selectedMakes.length || selectedMakes.includes(vehicle.make)) && (!needle || `${vehicle.make} ${vehicle.model} ${vehicle.generation ?? ''} ${vehicle.specs.map((spec) => spec.key).join(' ')}`.toLowerCase().includes(needle)));
+    return filtered.sort((a, b) => sort === 'year' ? b.years[0] - a.years[0] : sort === 'power' ? numericSpec(b, 'power') - numericSpec(a, 'power') : sort === 'weight' ? numericSpec(a, 'weight') - numericSpec(b, 'weight') : sort === 'recent' ? recent.indexOf(a.slug) - recent.indexOf(b.slug) : 0);
+  }, [q, type, tier, selectedMakes.join(','), sort]);
+  const reset = () => { setParams({}, { replace: true }); setSaved(false); };
+  return <div className="page garage-v2"><div className="page-heading"><div><p className="eyebrow">Curated machine atlas</p><h1>Garage</h1><p className="lede">Explore sourced vehicles through spatial previews, verified specifications and transparent model-confidence labels.</p></div><div className="garage-actions"><button className="btn ghost" type="button" onClick={() => { localStorage.setItem('atelon-saved-search', params.toString()); setSaved(true); }}>{saved ? 'Search saved ✓' : 'Save this search'}</button><Segmented label="Garage view" value={view} onChange={(value) => update('view', value)} options={[{ value: 'grid', label: 'Grid' }, { value: 'list', label: 'List' }, { value: 'cinematic', label: 'Cinema' }]} /></div></div>
+    <Glass depth="regular" className="filter-studio"><div className="filter-primary"><input aria-label="Search vehicles and specifications" placeholder="Search make, model, generation, or specification…" value={q} onChange={(event) => update('q', event.target.value)} /><select aria-label="Sort vehicles" value={sort} onChange={(event) => update('sort', event.target.value)}><option value="featured">Featured</option><option value="year">Newest year</option><option value="power">Highest power</option><option value="weight">Lowest weight</option><option value="recent">Recently viewed</option></select></div><div className="filter-chips" aria-label="Vehicle filters"><button className={type === 'all' ? 'active' : ''} onClick={() => update('type', 'all')}>All types</button><button className={type === 'car' ? 'active' : ''} onClick={() => update('type', 'car')}>Cars</button><button className={type === 'motorcycle' ? 'active' : ''} onClick={() => update('type', 'motorcycle')}>Motorcycles</button><button className={tier === 'reference' ? 'active' : ''} onClick={() => update('tier', tier === 'reference' ? 'all' : 'reference')}>Reference 3D</button>{makes.map((make) => <button className={selectedMakes.includes(make) ? 'active' : ''} key={make} onClick={() => toggleMake(make)}>{make}</button>)}{params.size > 0 && <button onClick={reset}>Clear ×</button>}</div></Glass>
+    <div className="results-toolbar"><p aria-live="polite"><strong>{list.length}</strong> {list.length === 1 ? 'machine' : 'machines'}</p><span>{view === 'cinematic' ? 'Immersive previews use more graphics power' : 'Poster-first performance mode'}</span></div>
+    {!list.length ? <Glass depth="dense" className="empty-state"><h2>No matching machines</h2><p className="muted">Remove a filter or search a broader term.</p><button className="btn primary" onClick={reset}>Show everything</button></Glass> : <div className={`vehicle-results view-${view}`}>{list.map((vehicle, index) => <Link key={vehicle.slug} to={`/vehicle/${vehicle.slug}`} className="vehicle-tile glass-regular" style={{ '--tile-index': index } as CSSProperties}>{vehicle.posterSmall && <div className="vehicle-media"><img src={vehicle.posterSmall} alt={`${vehicle.make} ${vehicle.model}`} loading={index < 3 ? 'eager' : 'lazy'} /><span className="vehicle-year">{vehicle.years[0]}</span></div>}<div className="vehicle-copy"><TierBadge tier={vehicle.tier} /><h2>{vehicle.make}<br /><strong>{vehicle.model}</strong></h2><p>{vehicle.generation}</p><div className="vehicle-quick-specs">{vehicle.specs.slice(0, 3).map((spec) => <span key={spec.key}><small>{spec.key}</small><b>{String(spec.value)} {spec.unit}</b></span>)}</div></div></Link>)}</div>}
+  </div>;
 }

@@ -21,6 +21,7 @@ const pages = [
   ['/ask', 'Ask Atelon | Vehicle help desk', 'Ask questions grounded in verified Atelon Garage data.', '<h1>Ask Atelon</h1><p>A vehicle help desk grounded only in the sourced records in the Garage.</p>'],
   ['/credits', 'Credits | Atelon', 'Model credits, provenance and source links for Atelon.', '<h1>Credits and provenance</h1><p>Review model attribution and source information for every showcase vehicle.</p>'],
   ['/about', 'About | Atelon', 'About the Atelon 3D vehicle atlas.', '<h1>About Atelon</h1><p>An independent, sourced 3D vehicle atlas.</p>'],
+  ['/account', 'My Garage | Atelon', 'Sign in and synchronize your saved Atelon vehicles.', '<h1>My Garage</h1><p>Save vehicles locally and synchronize them securely across devices.</p>'],
   ['/privacy', 'Privacy | Atelon', 'Atelon privacy information.', '<h1>Privacy</h1>'], ['/terms', 'Terms | Atelon', 'Atelon terms of use.', '<h1>Terms</h1>'], ['/suggest', 'Suggest a vehicle | Atelon', 'Suggest a vehicle for the Atelon Garage.', '<h1>Suggest a vehicle</h1>'], ['/design-system', 'Design system | Atelon', 'Atelon component and accessibility states.', '<h1>Atelon design system</h1>']
 ];
 for (const [route, title, description, body] of pages) writeRoute(route, render({ route, title, description, body }));

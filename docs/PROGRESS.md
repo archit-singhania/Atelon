@@ -79,3 +79,51 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 - [x] Production build, 19-route prerender, service worker generation and release artifact checks pass
 - [x] Seven-route headless browser suite passes mobile overflow, reduced motion, keyboard entry and manifest checks
 - [x] Architecture, contribution and release/rollback documentation is present
+
+## Atelon v2 — advanced cinematic atlas
+
+### Phase 11 — Liquid Glass v2
+
+- [x] Three reusable material depths, segmented controls, command palette and responsive navigation island
+- [x] Dynamic ambient cursor/scroll tokens, route choreography, spring interactions, contrast and reduced-motion fallbacks
+
+### Phase 12 — Adaptive spatial environment
+
+- [x] Lazily loaded global particle field with high/balanced/low device tiers and CSS fallback
+- [x] Battery, Data Saver, device-memory and reduced-motion quality selection
+- [x] Cinematic showroom camera presets, environments, guided-tour overlay and model hotspots
+- [~] True mesh-anchored hotspots and exploded-part animation require vehicle-specific mesh metadata
+
+### Phase 13 — Application v2
+
+- [x] Scroll-directed landing narrative, advanced Garage views/filters/sorting/saved search and recent history
+- [x] Two-to-four vehicle comparison, differences mode, visual bars and shareable URLs
+- [x] Vehicle provenance sheet, sticky specification dock, local saved Garage and account surface
+
+### Phase 14 — Supabase persistence
+
+- [x] Supabase migration, RLS policies, optional auth client and Fastify persistence adapter
+- [x] Collections, comparisons, threads, suggestions, export and deletion APIs with local fallback
+- [~] Cloud synchronization awaits Supabase project values and provider-side OAuth configuration
+
+### Phase 15 — Ask AI v2
+
+- [x] SSE event protocol, progressive UI, stop response, citations, matched-vehicle cards and comparison actions
+- [x] Evaluation expanded to 159 cases; deterministic grounded fallback passes 159/159
+- [~] Native upstream token streaming activates in a future provider adapter revision; current server streams the validated final answer in safe chunks
+
+### Phase 16 — Catalogue operations
+
+- [x] Credential-ready catalogue studio, pipeline metrics and database schema for assets/audit events
+- [~] Upload/processing actions remain read-only until object storage and administrator roles are configured
+
+### Phase 17 — Production backend
+
+- [x] Typed environment checks, readiness, JSON metrics, request IDs, graceful shutdown and modular v2 data/store routes
+- [x] Cursor catalogue API, user/IP chat limiting and local/cloud persistence modes
+
+### Phase 18 — Performance and release
+
+- [x] Initial JavaScript budget enforced below 250 KiB gzip; current measured entry is approximately 113 KiB gzip
+- [x] Eight API tests, 159 AI evaluations, strict model validation and release checks
+- [~] Hosted Supabase policy tests, real-device frame telemetry and signed Android regression require configured external environments

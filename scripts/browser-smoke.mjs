@@ -27,7 +27,7 @@ try {
   page.on('pageerror', (error) => failures.push(`page error: ${error.message}`));
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-  for (const route of ['/', '/garage', '/vehicle/mahindra-thar-4x4', '/compare', '/ask', '/credits', '/design-system']) {
+  for (const route of ['/', '/garage', '/vehicle/mahindra-thar-4x4', '/compare', '/ask', '/account', '/credits', '/design-system']) {
     const response = await page.goto(`http://127.0.0.1:4173${route}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForSelector('h1', { timeout: 10000 });
     if (!response?.ok()) failures.push(`${route} returned ${response?.status()}`);
@@ -35,13 +35,16 @@ try {
     if (!state.title || !state.heading || !state.main || state.overflow) failures.push(`${route} invalid UI state: ${JSON.stringify(state)}`);
   }
   await page.goto('http://127.0.0.1:4173/ask', { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => { document.body.tabIndex = -1; document.body.focus(); });
   await page.keyboard.press('Tab');
   const focused = await page.evaluate(() => document.activeElement?.classList.contains('skip-link'));
   if (!focused) failures.push('Skip link is not the first keyboard target.');
+  await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control');
+  if (!await page.evaluate(() => Boolean(document.querySelector('[role="dialog"][aria-label="Navigate Atelon"]')))) failures.push('Command palette did not open from the keyboard shortcut.');
   const manifest = await page.evaluate(async () => (await fetch('/manifest.webmanifest')).json());
   if (manifest.name !== 'Atelon' || manifest.icons.length < 2) failures.push('PWA manifest is incomplete.');
   if (failures.length) throw new Error(failures.join('\n'));
-  console.log('Browser smoke checks passed for 7 routes, mobile layout, keyboard entry, and PWA manifest.');
+  console.log('Browser smoke checks passed for 8 routes, mobile layout, command navigation, keyboard entry, and PWA manifest.');
 } finally {
   if (browser) await browser.close();
   web.close();

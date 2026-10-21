@@ -14,7 +14,8 @@ npm run dev:web         # http://localhost:5173
 npm run eval:make       # regenerate the 50 grounded chat cases
 npm run eval:chat       # run them against API_URL (defaults to localhost:8787)
 npm run verify          # strict data, API tests, production build, release artifact checks
-npm run test:browser    # seven-route mobile/keyboard/PWA smoke test (requires Chrome or Edge)
+npm run test:browser    # eight-route mobile/keyboard/PWA smoke test (requires Chrome or Edge)
+npm run performance:check # enforce entry CSS/JS budgets
 ```
 
 ## Layout
@@ -33,3 +34,9 @@ npm run test:browser    # seven-route mobile/keyboard/PWA smoke test (requires C
 Architecture: `docs/architecture.md`. Release/rollback: `docs/release-runbook.md`. Status: `docs/PROGRESS.md`.
 
 The internal liquid-glass component gallery is available at `/design-system` in local and preview builds.
+
+## Atelon v2 optional services
+
+Without cloud environment values, accounts use local saved vehicles and the API uses an isolated local persistence adapter. To enable synchronization, apply `supabase/migrations/001_atelon_v2.sql`, set server-only `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, and set browser-safe `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. Never expose the service-role key to Vite.
+
+Feature flags are `VITE_FEATURE_SPATIAL`, `VITE_FEATURE_ACCOUNTS`, `VITE_FEATURE_STREAMING_AI` and `VITE_FEATURE_ADMIN`. The administrator surface is development-only unless explicitly enabled.

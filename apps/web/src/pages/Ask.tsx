@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ask, bySlug, vehicles } from '../lib/data';
+import { askStream, bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
 
 interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean; fallbackReason?: string | null; retryable?: boolean; attemptedProviders?: string[] }
@@ -18,6 +18,7 @@ export default function Ask() {
   const nextId = useRef(Math.max(1, ...messages.map((message) => message.id)) + 1);
   const [online, setOnline] = useState(() => navigator.onLine);
   const end = useRef<HTMLDivElement>(null);
+  const activeRequest = useRef<AbortController | null>(null);
 
   useEffect(() => { end.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages, slow]);
   useEffect(() => { try { localStorage.setItem('atelon-chat-v1', JSON.stringify(messages.slice(-40))); } catch { /* storage can be unavailable */ } }, [messages]);
@@ -33,12 +34,23 @@ export default function Ask() {
     if (!question || busy) return;
     setMessages((items) => [...items, { id: nextId.current++, role: 'user', text: question }]);
     setQ(''); setBusy(true);
+    const messageId = nextId.current++;
+    setMessages((items) => [...items, { id: messageId, role: 'assistant', text: '', reply: { answer: '', provider: 'connecting', sources: [], matchedVehicles: [], fallback: false } }]);
+    activeRequest.current = new AbortController();
     try {
-      const reply = await ask(question);
-      setMessages((items) => [...items, { id: nextId.current++, role: 'assistant', text: reply.answer, reply }]);
+      await askStream(question, ({ type, data }) => setMessages((items) => items.map((message) => {
+        if (message.id !== messageId || !message.reply) return message;
+        if (type === 'answer_delta') return { ...message, text: message.text + String(data.text || '') };
+        if (type === 'citation') return { ...message, reply: { ...message.reply, sources: [...new Set([...message.reply.sources, String(data.url)])] } };
+        if (type === 'matched_vehicle') return { ...message, reply: { ...message.reply, matchedVehicles: [...new Set([...message.reply.matchedVehicles, String(data.slug)])] } };
+        if (type === 'fallback') return { ...message, reply: { ...message.reply, fallback: true, fallbackReason: String(data.reason || '') } };
+        if (type === 'status') return { ...message, reply: { ...message.reply, provider: String(data.provider || 'verified data') } };
+        if (type === 'done') return { ...message, reply: data as unknown as Reply };
+        return message;
+      })), activeRequest.current.signal);
     } catch (error) {
-      setMessages((items) => [...items, { id: nextId.current++, role: 'assistant', text: error instanceof Error ? error.message : 'I couldn’t reach the help desk just now. Please try again.', error: true, retryText: question }]);
-    } finally { setBusy(false); }
+      if ((error as Error).name !== 'AbortError') setMessages((items) => items.map((message) => message.id === messageId ? { ...message, text: error instanceof Error ? error.message : 'I couldn’t reach the help desk just now.', error: true, retryText: question } : message));
+    } finally { setBusy(false); activeRequest.current = null; }
   }
 
   return (
@@ -72,11 +84,11 @@ export default function Ask() {
                   {message.reply && <div className="message-meta">{message.reply.fallback ? `Verified-data fallback${message.reply.fallbackReason ? ` · ${message.reply.fallbackReason}` : ''}` : `Answered by ${message.reply.provider}`}</div>}
                   {!!message.reply?.matchedVehicles.length && <div className="vehicle-chips">{message.reply.matchedVehicles.map((slug) => { const vehicle = bySlug(slug); return <Link key={slug} to={`/vehicle/${slug}`}>{vehicle ? `${vehicle.make} ${vehicle.model}` : slug}</Link>; })}</div>}
                   {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source) => { const label = (() => { try { return new URL(source).hostname.replace(/^www\./, ''); } catch { return 'Source'; } })(); return <a key={source} href={source} target="_blank" rel="noreferrer">{label} ↗</a>; })}</div>}
-                  <div className="message-actions"><button type="button" onClick={() => navigator.clipboard?.writeText(message.text)}>Copy</button>{message.retryText && <button type="button" onClick={() => submit(message.retryText)}>Retry</button>}</div>
+                  <div className="message-actions"><button type="button" onClick={() => navigator.clipboard?.writeText(message.text)}>Copy</button>{message.reply && message.reply.matchedVehicles.length >= 2 && <Link to={`/compare?a=${message.reply.matchedVehicles[0]}&b=${message.reply.matchedVehicles[1]}`}>Compare</Link>}{message.retryText && <button type="button" onClick={() => submit(message.retryText)}>Retry</button>}</div>
                 </div>
               </article>
             ))}
-            {busy && <article className="message-row assistant"><div className="message-avatar"><img src="/icons/icon-192.png" alt="" /></div><div className="message typing"><i /><i /><i /></div></article>}
+            {busy && <button className="stop-generation" type="button" onClick={() => activeRequest.current?.abort()}>Stop response</button>}
             {slow && <p className="wake-note">The help desk is waking up. This can take about a minute on the free service.</p>}
             <div ref={end} />
           </div>
