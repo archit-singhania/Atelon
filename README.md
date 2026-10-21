@@ -11,12 +11,14 @@ npm run validate        # check data/vehicles and data/ledger.csv
 cp .env.example .env    # fill in secrets (never commit)
 npm run dev:api         # http://localhost:8787/health
 npm run dev:web         # http://localhost:5173
-npm run eval:make       # regenerate the 50 grounded chat cases
-npm run eval:chat       # run them against API_URL (defaults to localhost:8787)
+npm run eval:make       # regenerate the grounded evaluation set
+npm run eval:chat       # 159 in-process cases; optional API_URL for a hosted API
 npm run verify          # strict data, API tests, production build, release artifact checks
-npm run test:browser    # eight-route mobile/keyboard/PWA smoke test (requires Chrome or Edge)
+npm run test:browser    # nine routes, themes, collections, offline packs, conversions and keyboard QA
 npm run performance:check # enforce entry CSS/JS budgets
 ```
+
+V3 features, configuration, delivery status and verification limits: [V3 delivery record](docs/V3-DELIVERY.md). The optional `npm run worker:assets` command processes one inspected private upload with server Supabase credentials and an installed Chromium browser.
 
 ## Layout
 - `apps/web` Vite + React + Three.js (site, PWA, Capacitor shell)

@@ -1,5 +1,7 @@
 export type Tier = 'full' | 'reference' | 'specs-only';
 export type VehicleStatus = 'draft' | 'researching' | 'license-review' | 'asset-processing' | 'qa' | 'live' | 'rejected';
+export interface ModelHotspot { id: string; label: string; position: [number, number, number]; specKey: string }
+export interface ExplodedPart { node: string; offset: [number, number, number] }
 
 export interface Spec {
   key: string;
@@ -14,12 +16,17 @@ export interface Vehicle {
   make: string;
   model: string;
   generation?: string;
+  generationFamily?: string;
+  milestones?: { year: number; title: string; source: string }[];
   type: 'car' | 'motorcycle';
   years: [number, number | null];
   tier: Tier;
   summary: string;
   specs: Spec[];
   model3d?: {
+    hotspots?: ModelHotspot[];
+    paintMaterials?: string[];
+    explodedParts?: ExplodedPart[];
     glb: string;
     credit: string;
     license?: 'CC0' | 'CC BY 4.0' | 'CC BY 3.0' | 'written-permission' | 'user-supplied';

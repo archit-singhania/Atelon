@@ -67,7 +67,7 @@ function grounded(text, context) {
   return numbers(clean).every((value) => allowed.has(value)) ? clean : null;
 }
 
-export async function answerQuestion({ vehicles, chain, question, log, env = process.env }) {
+export async function answerQuestion({ vehicles, chain, question, log, env = process.env, signal }) {
   const matches = findForQuestion(vehicles, question);
   const sources = missingRequestedData(matches, question) ? [] : [...new Set(matches.flatMap((v) => v.specs.map((s) => s.source)))];
 
@@ -79,7 +79,7 @@ export async function answerQuestion({ vehicles, chain, question, log, env = pro
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: `DATA:\n${context}\n\nQUESTION: ${question}` }
     ];
-    const r = await askChain(chain, messages, log);
+    const r = await askChain(chain, messages, log, { signal });
     const safeAnswer = r.text && grounded(r.text, context);
     if (safeAnswer) return { answer: safeAnswer, provider: r.provider, sources, matchedVehicles: matches.map((v) => v.slug), fallback: false, fallbackReason: null, retryable: false, attemptedProviders: r.attemptedProviders };
     return { answer: noAiAnswer(matches, question), provider: 'no-ai', sources, matchedVehicles: matches.map((v) => v.slug), fallback: true, fallbackReason: 'providers-unavailable', retryable: true, attemptedProviders: r.attemptedProviders };

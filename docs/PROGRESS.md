@@ -82,6 +82,8 @@ Legend: `[x]` verified, `[~]` implemented but awaiting content/external verifica
 
 ## Atelon v2 — advanced cinematic atlas
 
+For the subsequent v3 implementation and the exact delivered/partial status of all 15 advanced features, see [V3-DELIVERY.md](V3-DELIVERY.md). V3 adds four appearance palettes, local variable fonts, research workspaces, real unit conversions, showroom controls, voice, sharing, offline packs and authenticated cloud/admin interfaces. Cloud migrations and device checks are not recorded as completed.
+
 ### Phase 11 — Liquid Glass v2
 
 - [x] Three reusable material depths, segmented controls, command palette and responsive navigation island

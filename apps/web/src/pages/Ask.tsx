@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { askStream, bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
+import VoiceInput from '../components/VoiceInput';
+import { bookmark } from '../lib/research';
+import ChatLibrary from '../components/ChatLibrary';
 
 interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean; fallbackReason?: string | null; retryable?: boolean; attemptedProviders?: string[] }
 interface Message { id: number; role: 'assistant' | 'user'; text: string; reply?: Reply; error?: boolean; retryText?: string }
@@ -45,9 +48,9 @@ export default function Ask() {
         if (type === 'matched_vehicle') return { ...message, reply: { ...message.reply, matchedVehicles: [...new Set([...message.reply.matchedVehicles, String(data.slug)])] } };
         if (type === 'fallback') return { ...message, reply: { ...message.reply, fallback: true, fallbackReason: String(data.reason || '') } };
         if (type === 'status') return { ...message, reply: { ...message.reply, provider: String(data.provider || 'verified data') } };
-        if (type === 'done') return { ...message, reply: data as unknown as Reply };
+        if (type === 'done') return { ...message, text: String(data.answer || message.text), reply: data as unknown as Reply };
         return message;
-      })), activeRequest.current.signal);
+      })), activeRequest.current.signal, messages.slice().reverse().find(message => message.reply?.matchedVehicles.length)?.reply?.matchedVehicles);
     } catch (error) {
       if ((error as Error).name !== 'AbortError') setMessages((items) => items.map((message) => message.id === messageId ? { ...message, text: error instanceof Error ? error.message : 'I couldn’t reach the help desk just now.', error: true, retryText: question } : message));
     } finally { setBusy(false); activeRequest.current = null; }
@@ -64,6 +67,7 @@ export default function Ask() {
             <a href="/compare">Compare vehicles <span>›</span></a>
             <a href="/credits">Model licences <span>›</span></a>
           </nav>
+          <ChatLibrary messages={messages} disabled={busy} restore={items => { setMessages(items); nextId.current = Math.max(1, ...items.map(item => item.id)) + 1; }} />
           <div className="support-trust"><span className="status-dot" />Grounded in verified Garage data</div>
         </aside>
 
@@ -76,11 +80,11 @@ export default function Ask() {
 
           <div className="message-log" role="log" aria-live="polite" aria-relevant="additions">
             <div className="chat-day"><span>Today</span></div>
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <article className={`message-row ${message.role}`} key={message.id}>
                 {message.role === 'assistant' && <div className="message-avatar"><img src="/icons/icon-192.png" alt="Atelon AI" /></div>}
                 <div className={`message ${message.error ? 'error' : ''}`}>
-                  <p>{message.text}</p>
+                  <p>{message.text}</p><div className="message-actions">{message.role === 'assistant' && message.text && <><button onClick={() => bookmark({ title: 'Atelon AI answer', text: message.text, url: '/ask', source: message.reply?.sources[0] })}>Bookmark answer</button>{'speechSynthesis' in window && <><button onClick={() => { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(message.text)); }}>Read aloud</button><button onClick={() => speechSynthesis.cancel()}>Stop audio</button></>}{index > 0 && <button disabled={busy} onClick={() => submit(messages.slice(0,index).reverse().find(item => item.role === 'user')?.text || '')}>Regenerate</button>}</>}{message.role === 'user' && <button disabled={busy} onClick={() => setQ(message.text)}>Edit & resend</button>}</div>
                   {message.reply && <div className="message-meta">{message.reply.fallback ? `Verified-data fallback${message.reply.fallbackReason ? ` · ${message.reply.fallbackReason}` : ''}` : `Answered by ${message.reply.provider}`}</div>}
                   {!!message.reply?.matchedVehicles.length && <div className="vehicle-chips">{message.reply.matchedVehicles.map((slug) => { const vehicle = bySlug(slug); return <Link key={slug} to={`/vehicle/${slug}`}>{vehicle ? `${vehicle.make} ${vehicle.model}` : slug}</Link>; })}</div>}
                   {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source) => { const label = (() => { try { return new URL(source).hostname.replace(/^www\./, ''); } catch { return 'Source'; } })(); return <a key={source} href={source} target="_blank" rel="noreferrer">{label} ↗</a>; })}</div>}
@@ -95,6 +99,7 @@ export default function Ask() {
 
           {messages.length === 1 && <div className="suggestion-row">{suggestions.map((suggestion) => <button type="button" key={suggestion} onClick={() => submit(suggestion)}>{suggestion}</button>)}</div>}
           <div className="composer-wrap">
+            <VoiceInput onTranscript={setQ} />
             {!online && <div className="composer-offline">You’re offline. Saved conversations remain available; sending will resume when you reconnect.</div>}
             <div className="composer">
               <textarea aria-label="Message Atelon AI" rows={1} maxLength={500} placeholder="Message Atelon AI…" value={q} onChange={(event) => setQ(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submit(); } }} />

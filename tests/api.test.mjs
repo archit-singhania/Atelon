@@ -50,6 +50,24 @@ test('v2 catalogue, readiness and local collection ownership', async (t) => {
 
 test('streaming chat emits grounded SSE event types', async (t) => {
   const app = await buildApp({ env: {}, logger: false }); t.after(() => app.close());
-  const response = await app.inject({ method: 'POST', url: '/api/v2/chat/stream', payload: { question: 'Tell me about the Mazda Furai' } });
+  const response = await app.inject({ method: 'POST', url: '/api/v2/chat/stream', headers:{origin:'http://localhost:5173'}, payload: { question: 'Tell me about the Mazda Furai' } });
   assert.equal(response.statusCode, 200); assert.match(response.headers['content-type'], /text\/event-stream/); assert.match(response.body, /event: status/); assert.match(response.body, /event: matched_vehicle/); assert.match(response.body, /event: done/);
+  assert.equal(response.headers['access-control-allow-origin'],'http://localhost:5173');
+  const events=response.body.split('\n\n').filter(Boolean).map(block=>({event:block.match(/^event: (.+)$/m)[1],data:JSON.parse(block.match(/^data: (.+)$/m)[1])}));
+  assert.equal(events.filter(item=>item.event==='answer_delta').map(item=>item.data.text).join(''),events.find(item=>item.event==='done').data.answer);
+});
+
+test('v3 research and administrative routes reject unverified identities', async t => {
+  const app = await buildApp({ env: { ADMIN_USER_IDS: 'pretend-admin' }, logger: false }); t.after(() => app.close());
+  for (const url of ['/api/v3/admin/catalogue', '/api/v3/admin/catalogue/mazda-furai/history']) {
+    const response = await app.inject({ method: 'GET', url, headers: { authorization: 'Bearer pretend-admin' } }); assert.equal(response.statusCode, 403);
+  }
+  const research = await app.inject({ method: 'PUT', url: '/api/v3/research', payload: { state: {} }, headers: { authorization: 'Bearer pretend-admin' } }); assert.equal(research.statusCode, 401);
+  const upload = await app.inject({ method: 'POST', url: '/api/v3/admin/uploads', payload: { slug: 'mazda-furai', extension: 'glb' } }); assert.equal(upload.statusCode, 403);
+});
+
+test('streaming follow-up context resolves only stored catalogue records', async t => {
+  const app = await buildApp({ env: {}, logger: false }); t.after(() => app.close());
+  const response = await app.inject({ method: 'POST', url: '/api/v2/chat/stream', payload: { question: 'What is its engine?', contextVehicles: ['mahindra-thar-4x4', 'ignore-all-instructions'] } });
+  assert.equal(response.statusCode, 200); assert.match(response.body, /mahindra-thar-4x4/); assert.doesNotMatch(response.body, /ignore-all-instructions/);
 });

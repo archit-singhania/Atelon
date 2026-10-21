@@ -29,7 +29,7 @@ export default defineConfig({
       workbox: {
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
-        globPatterns: ['**/*.{js,css,html,svg,webp,png}'],
+        globPatterns: ['**/*.{js,css,html,svg,webp,png,woff2}'],
         runtimeCaching: [
           { urlPattern: /\/posters\/.*\.webp$/, handler: 'CacheFirst', options: { cacheName: 'posters-v1', expiration: { maxEntries: 150, maxAgeSeconds: 60 * 60 * 24 * 30 } } },
           { urlPattern: /\/models\/.*\.glb$/, handler: 'CacheFirst', options: { cacheName: 'viewed-models-v1', expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 * 14, purgeOnQuotaError: true }, cacheableResponse: { statuses: [0, 200] } } },

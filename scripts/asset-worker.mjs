@@ -1,0 +1,21 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { createClient } from '@supabase/supabase-js';
+import { renderAssetPosters } from './render-asset-posters.mjs';
+const root=path.resolve(import.meta.dirname,'..');
+if(!process.env.SUPABASE_URL||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw new Error('The asset worker requires server-only Supabase environment variables.');
+const cloud=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{auth:{persistSession:false}});
+function check(result){if(result.error)throw result.error;return result.data;}
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const jobs=check(await cloud.from('processing_jobs').select('*').eq('status','inspected').order('created_at').limit(1));
+for(const job of jobs){const claimed=check(await cloud.from('processing_jobs').update({status:'optimizing',updated_at:new Date().toISOString()}).eq('id',job.id).eq('status','inspected').select().maybeSingle());if(!claimed)continue;const temporary=await fs.mkdtemp(path.join(os.tmpdir(),'atelon-job-'));try{
+  if(!job.object_path.endsWith('.glb'))throw new Error('Only inspected GLB jobs can be optimized.');
+  const source=check(await cloud.storage.from('vehicle-ingest').download(job.object_path));if(source.size>100*1048576)throw new Error('Original exceeds the 100 MiB intake limit.');const bytes=Buffer.from(await source.arrayBuffer());if(bytes.toString('ascii',0,4)!=='glTF')throw new Error('Invalid GLB signature.');const input=path.join(temporary,'original.glb');const output=path.join(temporary,'optimized.glb');await fs.writeFile(input,bytes);
+  await new Promise((resolve,reject)=>{const child=spawn(process.execPath,[path.join(root,'node_modules','@gltf-transform','cli','bin','cli.js'),'optimize',input,output,'--compress','meshopt','--texture-compress','webp','--texture-size','1024'],{shell:false,stdio:'ignore'});const timer=setTimeout(()=>{child.kill();reject(new Error('Optimization timed out.'));},180000);child.once('error',error=>{clearTimeout(timer);reject(error);});child.once('exit',code=>{clearTimeout(timer);code===0?resolve():reject(new Error('GLB optimization failed.'));});});
+  const optimized=await fs.readFile(output);if(optimized.length>5*1048576)throw new Error('Optimized GLB exceeds the 5 MiB publication budget.');const json=JSON.parse(optimized.subarray(20,20+optimized.readUInt32LE(12)).toString());const triangles=(json.meshes||[]).flatMap(mesh=>mesh.primitives||[]).reduce((sum,primitive)=>sum+((primitive.mode??4)===4?((json.accessors?.[primitive.indices]?.count||json.accessors?.[primitive.attributes?.POSITION]?.count||0)/3):0),0);
+  check(await cloud.from('processing_jobs').update({status:'poster-generation',updated_at:new Date().toISOString()}).eq('id',job.id));const posters=await renderAssetPosters(output,temporary);const prefix=`processed/${job.id}`;check(await cloud.storage.from('vehicle-ingest').upload(`${prefix}/model.glb`,optimized,{contentType:'model/gltf-binary',upsert:false}));const posterPaths=[];for(const poster of posters){const data=await fs.readFile(poster);if(data.length>250*1024)throw new Error('Poster exceeds 250 KiB.');const object=`${prefix}/${path.basename(poster)}`;check(await cloud.storage.from('vehicle-ingest').upload(object,data,{contentType:'image/webp',upsert:false}));posterPaths.push(object);}check(await cloud.from('processing_jobs').update({status:'qa',metrics:{originalHash:hash(bytes),optimizedHash:hash(optimized),fileSizeBytes:optimized.length,triangleCount:Math.round(triangles),optimizedPath:`${prefix}/model.glb`,posterPaths},updated_at:new Date().toISOString()}).eq('id',job.id));console.log(`Asset job ${job.id} ready for QA.`);
+}catch(error){await cloud.from('processing_jobs').update({status:'failed',metrics:{error:String(error.message).slice(0,300)},updated_at:new Date().toISOString()}).eq('id',job.id);console.error(`Asset job ${job.id} failed: ${error.message}`);process.exitCode=1;}finally{const target=path.resolve(temporary);if(path.dirname(target)===path.resolve(os.tmpdir())&&path.basename(target).startsWith('atelon-job-'))await fs.rm(target,{recursive:true,force:true});}}
+if(!jobs.length)console.log('No inspected asset jobs are waiting.');

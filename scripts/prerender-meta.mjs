@@ -15,6 +15,7 @@ function render({ route, title, description, body, image = '/brand/atelon-logo-d
 }
 function writeRoute(route, html) { const out = route === '/' ? dist : path.join(dist, route.replace(/^\//, '')); fs.mkdirSync(out, { recursive: true }); fs.writeFileSync(path.join(out, 'index.html'), html); }
 const pages = [
+  ['/research', 'Research workspace | Atelon', 'Private collections, research bookmarks and offline vehicle packs.', '<h1>Research workspace</h1><p>Organize vehicle collections and source bookmarks.</p>'],
   ['/', 'Atelon | Every machine in 3D', 'Explore a sourced vehicle atlas with optimized interactive 3D and grounded AI.', '<h1>Every machine in 3D</h1><p>Explore nine sourced showcase vehicles, compare specifications, and ask questions grounded in the Atelon Garage.</p>'],
   ['/garage', 'Garage | Atelon', 'Browse the Atelon vehicle catalogue.', `<h1>Garage</h1><p>${vehicles.length} showcase vehicles with sourced specifications and interactive 3D.</p><ul>${vehicles.map((v) => `<li><a href="/vehicle/${v.slug}">${esc(v.make)} ${esc(v.model)}</a></li>`).join('')}</ul>`],
   ['/compare', 'Compare vehicles | Atelon', 'Compare sourced vehicle specifications side by side.', '<h1>Compare vehicles</h1><p>Select two Garage vehicles to compare their sourced specifications.</p>'],

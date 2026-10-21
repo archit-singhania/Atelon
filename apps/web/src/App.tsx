@@ -19,6 +19,15 @@ import CommandPalette from './components/CommandPalette';
 import MobileNav from './components/MobileNav';
 import Admin from './pages/Admin';
 import Account from './pages/Account';
+import Research from './pages/Research';
+import AdminEditor from './components/AdminEditor';
+import NavigationMotion from './components/NavigationMotion';
+import CollectionSharing from './components/CollectionSharing';
+import GenerationExplorer from './components/GenerationExplorer';
+import ComparisonInsights from './components/ComparisonInsights';
+import ResearchOrganization, { SaveComparison } from './components/ResearchOrganization';
+import { ComparisonShareStudio } from './components/ShareStudio';
+import ModerationQueue from './components/ModerationQueue';
 import { features } from './lib/features';
 import AmbientMotion from './components/AmbientMotion';
 const PosterStudio = lazy(() => import('./pages/PosterStudio'));
@@ -35,6 +44,7 @@ export default function App() {
     <>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <OfflineNotice />
+      <NavigationMotion />
       <AmbientMotion />
       <PwaControls />
       <div className="spatial-backdrop spatial-static" aria-hidden="true" />
@@ -61,8 +71,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/garage" element={<Garage />} />
-          <Route path="/vehicle/:slug" element={<VehicleDetail />} />
-          <Route path="/compare" element={<Compare />} />
+          <Route path="/vehicle/:slug" element={<><VehicleDetail /><GenerationExplorer /></>} />
+          <Route path="/compare" element={<><Compare /><SaveComparison /><ComparisonInsights /><ComparisonShareStudio /></>} />
           <Route path="/ask" element={<Ask />} />
           <Route path="/credits" element={<Credits />} />
           <Route path="/about" element={<About />} />
@@ -70,7 +80,8 @@ export default function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/suggest" element={<Suggest />} />
           <Route path="/design-system" element={<DesignQA />} />
-          {features.catalogueStudio && <Route path="/admin" element={<Admin />} />}
+          <Route path="/research" element={<><Research />{!location.search.includes('share=') && <div className="page"><ResearchOrganization /><CollectionSharing /></div>}</>} />
+          {features.catalogueStudio && <Route path="/admin" element={<><Admin /><div className="page"><AdminEditor /></div><ModerationQueue /></>} />}
           {features.accounts && <Route path="/account" element={<Account />} />}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -78,7 +89,7 @@ export default function App() {
       <MobileNav />
       <footer className="foot">
         Atelon is independent of all vehicle manufacturers. All brand names belong to their owners.
-        <div><Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <Link to="/suggest">Suggest</Link></div>
+        <div><Link to="/research">Research workspace</Link> · <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <Link to="/suggest">Suggest</Link></div>
       </footer>
     </>
   );

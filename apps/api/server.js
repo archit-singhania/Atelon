@@ -8,6 +8,7 @@ import { answerQuestion, MAX_INPUT } from './src/chat.js';
 import { createStore } from './src/store.js';
 import { registerV2 } from './src/v2.js';
 import { validateEnv } from './src/env.js';
+import { registerPlatform } from './src/platform.js';
 
 export async function buildApp({ env = process.env, logger = true } = {}) {
   validateEnv(env);
@@ -22,7 +23,7 @@ export async function buildApp({ env = process.env, logger = true } = {}) {
   const origins = (env.ALLOWED_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,https://localhost,capacitor://localhost').split(',').map((value) => value.trim()).filter(Boolean);
   await app.register(cors, { origin: env.NODE_ENV === 'production' ? origins : [...origins, /^http:\/\/(localhost|127\.0\.0\.1):\d+$/] });
   await app.register(rateLimit, { global: false });
-  const metrics = { startedAt: Date.now(), requests: 0, failures: 0, totalLatencyMs: 0 };
+  const metrics = { startedAt: Date.now(), requests: 0, failures: 0, totalLatencyMs: 0, aiRequests: 0, aiFallbacks: 0, providerOutcomes: {} };
   app.addHook('onRequest', async (request, reply) => { request.requestStartedAt = performance.now(); metrics.requests += 1; reply.header('X-Request-Id', request.id); });
   app.addHook('onResponse', async (request, reply) => { metrics.totalLatencyMs += performance.now() - request.requestStartedAt; if (reply.statusCode >= 500) metrics.failures += 1; });
   app.addHook('onSend', async (_request, reply, payload) => {
@@ -36,7 +37,7 @@ export async function buildApp({ env = process.env, logger = true } = {}) {
   });
   app.get('/health', async () => ({ status: 'ok', vehicles: vehicles.length, providers: chain.map((provider) => provider.name), aiReady: chain.length > 0 }));
   app.get('/ready', async () => ({ status: 'ready', catalogue: vehicles.length > 0, persistence: store.mode }));
-  app.get('/metrics', async () => ({ uptimeSeconds: Math.round((Date.now() - metrics.startedAt) / 1000), requests: metrics.requests, failures: metrics.failures, averageLatencyMs: metrics.requests ? Math.round(metrics.totalLatencyMs / metrics.requests) : 0, catalogueSize: vehicles.length, persistence: store.mode }));
+  app.get('/metrics', async () => ({ uptimeSeconds: Math.round((Date.now() - metrics.startedAt) / 1000), requests: metrics.requests, failures: metrics.failures, averageLatencyMs: metrics.requests ? Math.round(metrics.totalLatencyMs / metrics.requests) : 0, catalogueSize: vehicles.length, persistence: store.mode, aiRequests: metrics.aiRequests, aiFallbacks: metrics.aiFallbacks, providerOutcomes: metrics.providerOutcomes }));
   app.get('/api/status', async () => ({ catalogue: { vehicles: vehicles.length }, ai: { ready: chain.length > 0, providers: chain.map((provider) => provider.name), deterministicFallback: true } }));
   app.get('/api/search', { schema: { querystring: { type: 'object', properties: { q: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (request) => ({ results: search(vehicles, String(request.query.q || '').slice(0, 100)) }));
   app.get('/api/compare', { schema: { querystring: { type: 'object', required: ['a', 'b'], properties: { a: { type: 'string', maxLength: 100 }, b: { type: 'string', maxLength: 100 } }, additionalProperties: false } } }, async (request, reply) => {
@@ -44,8 +45,9 @@ export async function buildApp({ env = process.env, logger = true } = {}) {
     if (!a || !b) return reply.code(404).send({ error: { code: 'VEHICLE_NOT_FOUND', message: 'Vehicle not found.' }, requestId: request.id });
     return { a, b };
   });
-  app.post('/api/chat', { config: { rateLimit: { max: Number(env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } }, schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } } }, async (request) => answerQuestion({ vehicles, chain, question: request.body.question.trim(), log: request.log, env }));
-  await registerV2(app, { vehicles, chain, store, env });
+  app.post('/api/chat', { config: { rateLimit: { max: Number(env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } }, schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } } }, async (request) => { const result=await answerQuestion({ vehicles, chain, question: request.body.question.trim(), log: request.log, env }); metrics.aiRequests+=1;if(result.fallback)metrics.aiFallbacks+=1;metrics.providerOutcomes[result.provider]=(metrics.providerOutcomes[result.provider]||0)+1;return result; });
+  await registerV2(app, { vehicles, chain, store, env, metrics });
+  await registerPlatform(app, { store, vehicles });
   return app;
 }
 
