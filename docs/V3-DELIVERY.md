@@ -8,7 +8,7 @@ This release implements the browser and server foundations for the approved 15-f
 | 2. Themes | Obsidian, Pearl, Titanium, Midnight and system preference; persistent appearance dialog | Physical-device visual review |
 | 3. Optical glass | Refined materials, stable specification surfaces, reduced-transparency and effects controls | Web rendering approximates optical glass |
 | 4. Motion | Navigation View Transitions, selected vehicle image/showroom shared-element naming, immediate fallback, scroll restoration and reduced-motion behavior | Physical browser/device review of transition continuity |
-| 5. Showroom | Actual environment-dependent lighting, intensity/orbit controls, URL presets, reset/restore/share | Architectural environment geometry/reflections are not yet implemented |
+| 5. Showroom | Environment-dependent lighting, original procedural gallery architecture, Pearl plinth, adaptive reflective floors, intensity/orbit controls, URL presets, reset/restore/share | Reflections run only on high-quality devices; physical-device frame-rate checks remain |
 | 6. Engineering hotspots | Model-space anchors, keyboard selector, camera focus, mapped paint and exploded-part support | Current models have generic object/material names; reviewed mappings must be added before controls appear |
 | 7. Discovery | Inspectable deterministic interpretation for lightweight, powerful, classics and vehicle types; normalized ranking | Arbitrary language/criteria are not supported; missing data stays missing |
 | 8. Compare | Metric/imperial/source units, comparable bars, deltas, report export and derived power-to-weight section | Data availability controls derived results |
@@ -43,4 +43,6 @@ Read-only collection links encode a public snapshot of names and vehicle slugs i
 
 The repository verification suite includes strict nine-vehicle validation, TypeScript/production build, release artifacts, gzip budgets, API authorization checks, grounded follow-up tests, deterministic discovery and conversion tests. Browser smoke covers nine routes, appearance persistence, collection creation, offline cached facts/posters, imperial rendering, keyboard entry and PWA manifest; visual captures are retained in ignored `.qa-v3/`. The standalone poster worker rendered both sizes successfully from the existing Thar GLB in local headless Chrome.
 
-Cloud RPC/RLS execution, OAuth, real microphones, physical-device frame rates and the optional model mappings have not been verified without their external environments/data.
+The architectural gallery was also rendered in the WebGL-enabled browser suite. Software renderer detection now selects the low-effects tier with demand-driven frames, capped DPR and no automatic orbit; temporary WebGL capability-test contexts are explicitly released. The desktop showroom controls occupy their own floating panel rather than overlapping the vehicle heading.
+
+Cloud RPC/RLS execution, OAuth, real microphones, hardware reflection performance, physical-device frame rates and the optional model mappings have not been verified without their external environments/data.

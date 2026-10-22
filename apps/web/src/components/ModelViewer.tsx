@@ -4,6 +4,8 @@ import { Bounds, Clone, ContactShadows, OrbitControls, Html, useBounds, useGLTF,
 import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import type { ModelHotspot, ExplodedPart } from '../types';
 import { vehicles } from '../lib/data';
+import ShowroomEnvironment from './ShowroomEnvironment';
+import { reportRenderer, useDeviceTier } from '../lib/useDeviceTier';
 
 function Model({ url, scrollRotate, hotspots = [], active, select, paint, paintMaterials = [], exploded = false, parts = [] }: { url: string; scrollRotate: boolean; hotspots?: ModelHotspot[]; active?: string; select: (id: string) => void; paint: string; paintMaterials?: string[]; exploded?: boolean; parts?: ExplodedPart[] }) {
   const { scene } = useGLTF(url, false, true); // explicitly install Meshopt before loading optimized GLBs
@@ -40,8 +42,10 @@ function LoadingStatus() {
   return <div className="model-loading" role="status">Preparing interactive 3D · {Math.round(progress)}%</div>;
 }
 
+let webglSupport: boolean | undefined;
 function supportsWebGL() {
-  try { const canvas = document.createElement('canvas'); return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl')); } catch { return false; }
+  if (webglSupport !== undefined) return webglSupport;
+  try { const canvas = document.createElement('canvas'); const context = canvas.getContext('webgl2') || canvas.getContext('webgl'); webglSupport = Boolean(context); context?.getExtension('WEBGL_lose_context')?.loseContext(); return webglSupport; } catch { webglSupport = false; return false; }
 }
 
 interface Props {
@@ -59,6 +63,7 @@ interface Props {
 }
 
 export default function ModelViewer({ url, poster, fullscreenButton = false, scrollRotate = false, cameraPreset = 'hero', environment = 'studio', lightIntensity = 1, orbitSpeed = 1.2, hotspots: suppliedHotspots, paintMaterials: suppliedPaintMaterials, explodedParts: suppliedParts }: Props) {
+  const quality = useDeviceTier();
   const metadata = vehicles.find(vehicle => vehicle.model3d?.glb === url)?.model3d;
   const hotspots = suppliedHotspots || metadata?.hotspots || []; const paintMaterials = suppliedPaintMaterials || metadata?.paintMaterials || []; const explodedParts = suppliedParts || metadata?.explodedParts || [];
   const [active, setActive] = useState(''); const [paint, setPaint] = useState('#8196a8'); const [exploded, setExploded] = useState(false);
@@ -91,12 +96,12 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
       {poster && !ready && <img src={poster} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />}
       {!webgl && <div className="placeholder">Interactive 3D is unavailable in this browser. The poster and sourced specifications remain available.</div>}
       {webgl && nearby && deferForDevice && !requested && <div className="model-consent"><button className="btn primary" type="button" onClick={() => setRequested(true)}>Load interactive 3D</button><small>Data Saver or a lower-memory device was detected.</small></div>}
-      {webgl && nearby && (!deferForDevice || requested) && <>{!ready && <LoadingStatus />}<ViewerBoundary><Canvas frameloop={!visible ? 'never' : reduced ? 'demand' : 'always'} camera={{ position: cameraPreset === 'side' ? [5, .8, .2] : cameraPreset === 'detail' ? [2.2, 1.1, 2.2] : [3, 1.5, 4], fov: cameraPreset === 'detail' ? 32 : 40 }} dpr={memory && memory <= 4 ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: 'high-performance', antialias: !(memory && memory <= 4) }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
+      {webgl && nearby && (!deferForDevice || requested) && <>{!ready && <LoadingStatus />}<ViewerBoundary><Canvas onCreated={({ gl }) => reportRenderer(gl)} frameloop={!visible ? 'never' : reduced || quality === 'low' ? 'demand' : 'always'} camera={{ position: cameraPreset === 'side' ? [5, .8, .2] : cameraPreset === 'detail' ? [2.2, 1.1, 2.2] : [3, 1.5, 4], fov: cameraPreset === 'detail' ? 32 : 40 }} dpr={quality === 'low' ? 1 : quality === 'balanced' ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: quality === 'high' ? 'high-performance' : 'low-power', antialias: quality === 'high' }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
         <Suspense fallback={null}>
           <Bounds fit clip observe margin={1.4}>
-            <Model url={url} scrollRotate={scrollRotate && !reduced} hotspots={hotspots} active={active} select={id => { setActive(id); setRotate(false); }} paint={paint} paintMaterials={paintMaterials} exploded={exploded} parts={explodedParts} />
+            <Model url={url} scrollRotate={scrollRotate && !reduced && quality !== 'low'} hotspots={hotspots} active={active} select={id => { setActive(id); setRotate(false); }} paint={paint} paintMaterials={paintMaterials} exploded={exploded} parts={explodedParts} />
           </Bounds>
-          <ContactShadows position={[0, 0, 0]} opacity={0.5} blur={2.5} scale={12} />
+          {fullscreenButton ? <ShowroomEnvironment url={url} environment={environment} /> : <ContactShadows position={[0, 0, 0]} opacity={0.5} blur={2.5} scale={12} />}
           <hemisphereLight intensity={1.3 * lightIntensity} color={environment === 'pearl' ? '#fff5e4' : '#dff5ff'} groundColor={environment === 'pearl' ? '#88817a' : '#121820'} />
           <directionalLight position={[4, 7, 5]} intensity={(environment === 'night' ? 1.3 : 2.4) * lightIntensity} color="#ffffff" />
           <directionalLight position={[-4, 2, -3]} intensity={1.1 * lightIntensity} color={environment === 'night' ? '#988bff' : '#8ddcff'} />
@@ -108,7 +113,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
             makeDefault
             enableDamping
             dampingFactor={0.08}
-            autoRotate={rotate && !reduced}
+            autoRotate={rotate && !reduced && quality !== 'low'}
             autoRotateSpeed={orbitSpeed}
             minPolarAngle={0.2}
             maxPolarAngle={Math.PI / 2.05}

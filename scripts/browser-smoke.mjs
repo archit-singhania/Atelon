@@ -21,7 +21,7 @@ const profile = fs.mkdtempSync(path.join(root, '.browser-smoke-'));
 try {
   const executablePath = candidates.find((candidate) => fs.existsSync(candidate));
   if (!executablePath) throw new Error('Chrome/Edge not found; set CHROME_PATH.');
-  browser = await puppeteer.launch({ executablePath, headless: true, userDataDir: profile, args: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'] });
+  browser = await puppeteer.launch({ executablePath, headless: true, userDataDir: profile, args: process.env.ATELON_QA_WEBGL === '1' ? ['--no-sandbox', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--disable-dev-shm-usage'] : ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'] });
   const page = await browser.newPage();
   const failures = [];
   page.on('pageerror', (error) => failures.push(`page error: ${error.message}`));
@@ -72,6 +72,13 @@ try {
   await page.evaluate(() => [...document.querySelectorAll('.theme-swatch')].find(button => button.textContent === 'pearl')?.click());
   await page.click('button[aria-label="Close appearance settings"]');
   await page.screenshot({ path: path.join(qaDir, 'desktop-pearl.png'), fullPage: false });
+  if (process.env.ATELON_QA_WEBGL === '1') {
+    await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
+    await page.goto('http://127.0.0.1:4173/vehicle/mahindra-thar-4x4?scene=studio', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.waitForFunction(() => { document.querySelector('.vehicle-showroom .model-consent button')?.click(); const canvas = document.querySelector('.vehicle-showroom canvas'); if (!canvas || document.querySelector('.vehicle-showroom .model-loading')) return false; let element = canvas; while (element && !element.classList.contains('vehicle-showroom')) { if (Number.parseFloat(getComputedStyle(element).opacity) < .95) return false; element = element.parentElement; } return true; }, { timeout: 90000 }).catch(async error => { console.error('Showroom load state:', await page.evaluate(() => ({ loading: document.querySelector('.vehicle-showroom .model-loading')?.textContent, fallback: document.querySelector('.vehicle-showroom .placeholder')?.textContent, resources: performance.getEntriesByType('resource').filter(row => row.name.includes('.glb')).map(row => ({ name: row.name, duration: row.duration })) }))); throw error; });
+    await page.$eval('.vehicle-showroom', element => element.scrollIntoView({ block: 'center' }));
+    await page.screenshot({ path: path.join(qaDir, 'showroom-gallery.png'), fullPage: false });
+  }
   if (failures.length) throw new Error(failures.join('\n'));
   console.log('Browser smoke checks passed for 9 routes, appearance persistence, collection creation, imperial conversion, mobile layout, keyboard entry, and PWA manifest. Screenshots saved to .qa-v3.');
 } finally {
