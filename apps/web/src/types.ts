@@ -18,12 +18,16 @@ export interface Vehicle {
   generation?: string;
   generationFamily?: string;
   milestones?: { year: number; title: string; source: string }[];
+  relationships?: { targetSlug:string;kind:'platform'|'engine'|'designer'|'motorsport'|'generation';label:string;source:string }[];
+  recordings?: { id:string;title:string;url:string;source:string;credit:string;kind:'startup'|'idle'|'acceleration';recordedAt?:string }[];
   type: 'car' | 'motorcycle';
   years: [number, number | null];
   tier: Tier;
   summary: string;
   specs: Spec[];
   model3d?: {
+    calibration?: { metersPerUnit:number;rotation:[number,number,number];reviewer:string;source:string;verifiedAt:string };
+    interior?: { seats:{id:string;label:string;position:[number,number,number];target:[number,number,number]}[];controls?:{id:string;label:string;description:string;source:string}[];reviewer:string;verifiedAt:string };
     hotspots?: ModelHotspot[];
     paintMaterials?: string[];
     explodedParts?: ExplodedPart[];

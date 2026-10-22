@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { vehicles } from '../lib/data';
 
-const routes = [{ label: 'Open Garage', path: '/garage' }, { label: 'Research collections and offline packs', path: '/research' }, { label: 'Compare vehicles', path: '/compare' }, { label: 'Ask Atelon AI', path: '/ask' }, { label: 'View credits', path: '/credits' }];
+const routes = [{ label: 'Advanced Atlas — fifteen research tools', path: '/atlas' },{ label: 'Open Garage', path: '/garage' }, { label: 'Research collections and offline packs', path: '/research' }, { label: 'Compare vehicles', path: '/compare' }, { label: 'Ask Atelon AI', path: '/ask' }, { label: 'View credits', path: '/credits' }];
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false); const [query, setQuery] = useState(''); const navigate = useNavigate(); const input = useRef<HTMLInputElement>(null);

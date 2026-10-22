@@ -1,5 +1,9 @@
 # Atelon progress
 
+## Advanced Atlas — current implementation
+
+Fifteen lazy-loaded tools are now available at `/atlas`, with validated `/api/v4` action, room, vision and contribution endpoints and migrations 003/004. A subsequent fifteen-tool hardening pass adds typed-state recovery, private-data guards, positive authorization tests, safer media/export handling and improved mobile/keyboard workflows. See [ATLAS-QUALITY-AUDIT.md](ATLAS-QUALITY-AUDIT.md) for findings and the next delivery plan. See [ADVANCED-ATLAS.md](ADVANCED-ATLAS.md) for the per-feature delivery ledger, limitations and activation steps. Cloud, calibrated geometry, authentic audio and reviewed interiors remain explicitly gated; they are not marked production-verified.
+
 Legend: `[x]` verified, `[~]` implemented but awaiting content/external verification, `[ ]` not started. `[YOU]` is owner/manual work; `[CODE]` is implementation work.
 
 ## Phase 0 — Development environment

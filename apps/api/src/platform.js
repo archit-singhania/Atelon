@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto';
 function fail(code, message) { return Object.assign(new Error(message), { statusCode: code }); }
 export async function registerPlatform(app, { store, vehicles }) {
-  const auth = request => { if (!store.cloud || !request.user) throw fail(401, 'Sign in to use cloud storage.'); };
-  const admin = request => { if (!store.isAdmin(request)) throw fail(403, 'Administrator access required.'); };
+  const auth = async request => { if (!store.cloud || !request.user) throw fail(401, 'Sign in to use cloud storage.'); };
+  const admin = async request => { if (!store.isAdmin(request)) throw fail(403, 'Administrator access required.'); };
   const check = result => { if (result.error) throw result.error; return result.data; };
   app.get('/api/v3/research', { preHandler: auth }, async request => check(await store.cloud.from('research_state').select('*').eq('user_id', request.user.id).maybeSingle()) || { state: {} });
   app.put('/api/v3/research', { preHandler: auth, bodyLimit: 128 * 1024, schema: { body: { type: 'object', required: ['state'], properties: { state: { type: 'object' }, expectedUpdatedAt: { type: ['string','null'] } }, additionalProperties: false } } }, async (request, reply) => {
@@ -16,7 +16,7 @@ export async function registerPlatform(app, { store, vehicles }) {
   app.put('/api/v3/admin/catalogue/:slug', { preHandler: admin, bodyLimit: 128 * 1024, schema: { params: { type: 'object', properties: { slug: { type: 'string', pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$', maxLength: 100 } }, required: ['slug'] }, body: { type: 'object', required: ['document','expectedRevision'], properties: { document: { type: 'object', required: ['slug','make','model','status','summary','specs'] }, expectedRevision: { type: 'integer', minimum: 0 } }, additionalProperties: false } } }, async (request, reply) => {
     const document = request.body.document; if (document.slug !== request.params.slug) throw fail(400, 'Slug mismatch.');
     const statuses = ['draft','researching','license-review','asset-processing','qa','live','rejected']; if (!statuses.includes(document.status)) throw fail(400, 'Invalid lifecycle state.');
-    if (!Array.isArray(document.specs) || document.specs.some(spec => !spec.key || spec.value === undefined || !/^https?:\/\//.test(spec.source || ''))) throw fail(400, 'Every specification requires a value and source URL.');
+    if (!Array.isArray(document.specs) || document.specs.some(spec => !spec || typeof spec.key!=='string' || !spec.key.trim() || !['string','number','boolean'].includes(typeof spec.value) || !/^https?:\/\//.test(spec.source || ''))) throw fail(400, 'Every specification requires a value and source URL.');
     if (document.status === 'live') { const original = vehicles.find(vehicle => vehicle.slug === document.slug); if (!original || JSON.stringify(original) !== JSON.stringify(document)) throw fail(422, 'Publication requires the verified build snapshot. Save as QA, export and run strict asset validation before publication.'); }
     const row = check(await store.cloud.rpc('save_catalogue_document', { p_slug: document.slug, p_document: document, p_expected: request.body.expectedRevision, p_actor: request.user.id }));
     if (!row) return reply.code(409).send({ error: { code: 'REVISION_CONFLICT', message: 'Reload the latest catalogue revision.' } });

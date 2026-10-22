@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { convertSpec } from '../apps/web/src/lib/units.ts';
 import { interpretDiscovery } from '../apps/web/src/lib/discovery.ts';
 test('unit conversions distinguish power, speed, mass and unknown values', () => {
+  assert.deepEqual(convertSpec('1,560 kg',undefined,'imperial'),{value:3439.21,unit:'lb'});
+  assert.deepEqual(convertSpec('331 kW / 450 PS at 6,500 rpm',undefined,'metric'),{value:331,unit:'kW'});
   assert.deepEqual(convertSpec(100, 'hp', 'metric'), { value: 74.57, unit: 'kW' });
   assert.deepEqual(convertSpec(100, 'kg', 'imperial'), { value: 220.46, unit: 'lb' });
   assert.deepEqual(convertSpec('unknown', 'kg', 'imperial'), { value: 'unknown', unit: 'kg' });

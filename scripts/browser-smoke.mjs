@@ -2,11 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import puppeteer from 'puppeteer-core';
+import { auditAtlas } from './atlas-browser-audit.mjs';
+import { buildApp } from '../apps/api/server.js';
+const api = await buildApp({env:{NODE_ENV:'test'},logger:false});
 
 const root = path.resolve(import.meta.dirname, '..');
 const dist = path.join(root, 'apps', 'web', 'dist');
 const contentType = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.webp': 'image/webp', '.png': 'image/png', '.glb': 'model/gltf-binary' };
-const web = http.createServer((request, response) => {
+const web = http.createServer(async (request, response) => {
+  if(request.url.startsWith('/api/')) {const chunks=[];for await(const chunk of request)chunks.push(chunk);const result=await api.inject({method:request.method,url:request.url,headers:request.headers,payload:Buffer.concat(chunks)});response.writeHead(result.statusCode,result.headers);response.end(result.rawPayload);return;}
   const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
   const localPath = pathname.replace(/^\/+/, '');
   const candidates = [path.join(dist, localPath), path.join(dist, localPath, 'index.html'), path.join(dist, 'index.html')];
@@ -24,16 +28,46 @@ try {
   browser = await puppeteer.launch({ executablePath, headless: true, userDataDir: profile, args: process.env.ATELON_QA_WEBGL === '1' ? ['--no-sandbox', '--use-angle=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist', '--disable-dev-shm-usage'] : ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'] });
   const page = await browser.newPage();
   const failures = [];
+  page.on('requestfailed',request=>{if(request.url().includes('/api/'))console.error('API request failed:',request.url(),request.failure()?.errorText);});
   page.on('pageerror', (error) => failures.push(`page error: ${error.message}`));
   await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 2 });
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-  for (const route of ['/', '/garage', '/vehicle/mahindra-thar-4x4', '/compare', '/ask', '/account', '/research', '/credits', '/design-system']) {
+  for (const route of ['/', '/garage', '/vehicle/mahindra-thar-4x4', '/compare', '/ask', '/account', '/research', '/credits', '/design-system', '/atlas', ...['commands','lab','bay','graph','evidence','rooms','interiors','fit','identify','discovery','director','evolution','sound','dossiers','contribute'].map(tool=>`/atlas/${tool}`)]) {
+    console.log(`Checking ${route}`);
     const response = await page.goto(`http://127.0.0.1:4173${route}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForSelector('h1', { timeout: 10000 });
     if (!response?.ok()) failures.push(`${route} returned ${response?.status()}`);
     const state = await page.evaluate(() => ({ title: document.title, heading: document.querySelector('h1')?.textContent, overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 2, main: Boolean(document.querySelector('main')) }));
     if (!state.title || !state.heading || !state.main || state.overflow) failures.push(`${route} invalid UI state: ${JSON.stringify(state)}`);
   }
+  console.log('Checking concierge action');
+  await page.goto('http://127.0.0.1:4173/atlas/commands', {waitUntil:'networkidle0'});
+  await page.$eval('.atlas-panel button.primary',node=>node.scrollIntoView({block:'center',behavior:'instant'}));
+  await page.click('.atlas-panel button.primary');
+  await page.waitForSelector('.atlas-action a').catch(async error=>{console.error('Concierge failure state:',await page.evaluate(()=>({url:location.href,heading:document.querySelector('h1')?.textContent,notice:document.querySelector('.atlas-panel [role=status]')?.textContent,button:document.querySelector('.atlas-panel button')?.textContent,question:document.querySelector('.atlas-panel input')?.value,valid:document.querySelector('.atlas-panel form')?.checkValidity()})));throw error;});
+  if(!(await page.$eval('.atlas-action a',node=>node.href)).includes('view=side')) failures.push('Showroom concierge did not produce the requested camera view.');
+  console.log('Checking evidence snapshot');
+  await page.goto('http://127.0.0.1:4173/atlas/evidence', {waitUntil:'networkidle0'});
+  await page.click('.atlas-toolbar button.primary');
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('atelon-evidence-v4')||'[]')[0]?.hash.length===64);
+  console.log('Checking shared research room');
+  await page.goto('http://127.0.0.1:4173/atlas/rooms', {waitUntil:'networkidle0'});
+  await page.click('.atlas-toolbar button.primary');
+  await page.waitForSelector('.atlas-panel textarea');
+  const peer=await browser.newPage();await peer.goto(page.url(),{waitUntil:'networkidle0'});
+  await page.bringToFront();
+  await page.type('.atlas-panel textarea','Shared browser research note');
+  await page.click('.atlas-panel form button');
+  await peer.bringToFront();
+  await peer.waitForFunction(()=>document.body.textContent.includes('Shared browser research note'));
+  await peer.close();
+  await page.bringToFront();
+  console.log('Checking director film export');
+  await page.goto('http://127.0.0.1:4173/atlas/director', {waitUntil:'networkidle0'});
+  await page.evaluate(()=>[...document.querySelectorAll('button')].find(button=>button.textContent==='Render WebM film')?.click());
+  await page.waitForSelector('a[download="atelon-story.webm"]',{timeout:30000});
+  const film=await page.$eval('a[download="atelon-story.webm"]',async node=>(await(await fetch(node.href)).blob()).size);
+  if(film<1000)failures.push('Director exported an empty film.');
   await page.goto('http://127.0.0.1:4173/ask', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => { document.body.tabIndex = -1; document.body.focus(); });
   await page.keyboard.press('Tab');
@@ -72,17 +106,27 @@ try {
   await page.evaluate(() => [...document.querySelectorAll('.theme-swatch')].find(button => button.textContent === 'pearl')?.click());
   await page.click('button[aria-label="Close appearance settings"]');
   await page.screenshot({ path: path.join(qaDir, 'desktop-pearl.png'), fullPage: false });
+  await page.goto('http://127.0.0.1:4173/atlas', {waitUntil:'networkidle0'});
+  await page.screenshot({path:path.join(qaDir,'atlas-desktop-pearl.png'),fullPage:false});
+  await page.setViewport({width:390,height:844,deviceScaleFactor:2});
+  await page.goto('http://127.0.0.1:4173/atlas/lab', {waitUntil:'networkidle0'});
+  await page.screenshot({path:path.join(qaDir,'atlas-lab-mobile-pearl.png'),fullPage:false});
   if (process.env.ATELON_QA_WEBGL === '1') {
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'no-preference' }]);
     await page.goto('http://127.0.0.1:4173/vehicle/mahindra-thar-4x4?scene=studio', { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForFunction(() => { document.querySelector('.vehicle-showroom .model-consent button')?.click(); const canvas = document.querySelector('.vehicle-showroom canvas'); if (!canvas || document.querySelector('.vehicle-showroom .model-loading')) return false; let element = canvas; while (element && !element.classList.contains('vehicle-showroom')) { if (Number.parseFloat(getComputedStyle(element).opacity) < .95) return false; element = element.parentElement; } return true; }, { timeout: 90000 }).catch(async error => { console.error('Showroom load state:', await page.evaluate(() => ({ loading: document.querySelector('.vehicle-showroom .model-loading')?.textContent, fallback: document.querySelector('.vehicle-showroom .placeholder')?.textContent, resources: performance.getEntriesByType('resource').filter(row => row.name.includes('.glb')).map(row => ({ name: row.name, duration: row.duration })) }))); throw error; });
     await page.$eval('.vehicle-showroom', element => element.scrollIntoView({ block: 'center' }));
     await page.screenshot({ path: path.join(qaDir, 'showroom-gallery.png'), fullPage: false });
+    await page.goto('http://127.0.0.1:4173/atlas/bay',{waitUntil:'networkidle0'});await page.waitForSelector('.atlas-scene canvas');
+    const canLose=await page.evaluate(async()=>{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const canvas=document.querySelector('.atlas-scene canvas');const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');const extension=gl?.getExtension('WEBGL_lose_context');extension?.loseContext();return Boolean(extension);});
+    if(canLose){await page.waitForSelector('.atlas-scene [role="alert"]');await page.$eval('.atlas-scene .model-consent button',button=>button.click());await page.waitForFunction(()=>Boolean(document.querySelector('.atlas-scene canvas'))&&!document.querySelector('.atlas-scene [role="alert"]'));console.log('WebGL context-loss/restart check passed.');}else failures.push('WebGL test could not access the context-loss extension.');
   }
+  await auditAtlas(page);
   if (failures.length) throw new Error(failures.join('\n'));
-  console.log('Browser smoke checks passed for 9 routes, appearance persistence, collection creation, imperial conversion, mobile layout, keyboard entry, and PWA manifest. Screenshots saved to .qa-v3.');
+  console.log('Browser smoke checks passed for 25 routes, Atlas commands, evidence hashes, two-tab room synchronization, appearance persistence, collection creation, imperial conversion, mobile layout, keyboard entry, and PWA manifest. Screenshots saved to .qa-v3.');
 } finally {
   if (browser) await browser.close();
   web.close();
+  await api.close();
   try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 4, retryDelay: 250 }); } catch { console.warn(`Temporary browser profile retained at ${profile}`); }
 }

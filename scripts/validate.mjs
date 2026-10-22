@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+import { validateAtlasMetadata } from './lib/atlas-validation.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const vdir = path.join(root, 'data', 'vehicles');
@@ -57,6 +58,8 @@ for (const f of files) {
     if (!s.source || !/^https?:\/\//.test(s.source)) err(f, `spec "${s.key}" needs a source URL`);
   }
 
+  for(const issue of validateAtlasMetadata(v,new Set(files.map(file=>file.replace(/\.json$/,'')))))err(f,issue);
+  for(const recording of v.recordings||[]){if(typeof recording.url==='string'&&!fs.existsSync(path.join(root,'apps','web','public',recording.url.replace(/^\//,''))))err(f,`recording asset not found: ${recording.url}`);}
   if (v.tier !== 'specs-only') {
     if (!v.model3d?.glb) err(f, `tier "${v.tier}" needs model3d.glb`);
     else {

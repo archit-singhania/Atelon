@@ -1,0 +1,8 @@
+import { Suspense } from 'react';
+import ResearchCanvas from './ResearchCanvas';
+import { Center, Clone, Html, OrbitControls, useGLTF } from '@react-three/drei';
+import { bySlug } from '../../../lib/data';
+import { dimensionRecord, vehicleName } from '../shared';
+import type { Vehicle } from '../../../types';
+function CalibratedModel({vehicle}:{vehicle:Vehicle}){const {scene}=useGLTF(vehicle.model3d!.glb,false,true);const calibration=vehicle.model3d!.calibration!;return <group scale={calibration.metersPerUnit} rotation={calibration.rotation}><Center bottom><Clone object={scene} deep/></Center></group>;}
+export default function BayScene({slugs}:{slugs:string[]}){return <ResearchCanvas camera={{position:[9,7,10],fov:42}}><hemisphereLight intensity={2}/><directionalLight position={[5,8,4]} intensity={3}/><gridHelper args={[20,20,'#7799bb','#394552']}/>{slugs.map((slug,index)=>{const vehicle=bySlug(slug);if(!vehicle)return null;const dimensions=dimensionRecord(vehicle);const calibrated=vehicle.model3d?.calibration;return <group key={`${slug}-${index}`} position={[(index-(slugs.length-1)/2)*4,0,0]}>{dimensions&&<mesh position={[0,dimensions.height/2,0]}><boxGeometry args={[dimensions.width,dimensions.height,dimensions.length]}/><meshStandardMaterial wireframe color={index?'#c1b6ff':'#8ddcff'}/></mesh>}{calibrated&&calibrated.metersPerUnit>0&&<Suspense fallback={null}><CalibratedModel vehicle={vehicle}/></Suspense>}<Html position={[0,.1,3.6]} center><span className="badge">{vehicleName(vehicle)}</span></Html></group>;})}<OrbitControls makeDefault enableDamping/></ResearchCanvas>;}

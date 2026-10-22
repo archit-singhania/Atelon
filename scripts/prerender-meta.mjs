@@ -14,7 +14,10 @@ function render({ route, title, description, body, image = '/brand/atelon-logo-d
   return template.replace(/<title>.*?<\/title>/s, `<title>${esc(title)}</title>`).replace(/<meta name="description" content=".*?" \/>/s, `<meta name="description" content="${esc(description)}" />`).replace('</head>', `    ${head}\n  </head>`).replace('<div id="root"></div>', `<div id="root"><main class="static-snapshot">${body}</main></div>`);
 }
 function writeRoute(route, html) { const out = route === '/' ? dist : path.join(dist, route.replace(/^\//, '')); fs.mkdirSync(out, { recursive: true }); fs.writeFileSync(path.join(out, 'index.html'), html); }
+const atlasTools = ['commands','lab','bay','graph','evidence','rooms','interiors','fit','identify','discovery','director','evolution','sound','dossiers','contribute'];
 const pages = [
+  ['/atlas', 'Advanced Atlas | Atelon', 'Fifteen connected automotive research tools.', '<h1>Advanced Atlas</h1><ul>'+atlasTools.map(tool=>`<li><a href="/atlas/${tool}">${tool}</a></li>`).join('')+'</ul>'],
+  ...atlasTools.map(tool=>[`/atlas/${tool}`, `${tool} | Atelon Atlas`, 'Interactive automotive research with explicit evidence and availability gates.', `<h1>Atelon Atlas: ${tool}</h1><p>Explore this interactive research workspace.</p>`]),
   ['/research', 'Research workspace | Atelon', 'Private collections, research bookmarks and offline vehicle packs.', '<h1>Research workspace</h1><p>Organize vehicle collections and source bookmarks.</p>'],
   ['/', 'Atelon | Every machine in 3D', 'Explore a sourced vehicle atlas with optimized interactive 3D and grounded AI.', '<h1>Every machine in 3D</h1><p>Explore nine sourced showcase vehicles, compare specifications, and ask questions grounded in the Atelon Garage.</p>'],
   ['/garage', 'Garage | Atelon', 'Browse the Atelon vehicle catalogue.', `<h1>Garage</h1><p>${vehicles.length} showcase vehicles with sourced specifications and interactive 3D.</p><ul>${vehicles.map((v) => `<li><a href="/vehicle/${v.slug}">${esc(v.make)} ${esc(v.model)}</a></li>`).join('')}</ul>`],

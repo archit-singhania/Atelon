@@ -71,3 +71,12 @@ test('streaming follow-up context resolves only stored catalogue records', async
   const response = await app.inject({ method: 'POST', url: '/api/v2/chat/stream', payload: { question: 'What is its engine?', contextVehicles: ['mahindra-thar-4x4', 'ignore-all-instructions'] } });
   assert.equal(response.statusCode, 200); assert.match(response.body, /mahindra-thar-4x4/); assert.doesNotMatch(response.body, /ignore-all-instructions/);
 });
+
+test('private persistence cannot fall back to a shared anonymous production owner',async t=>{
+ const app=await buildApp({env:{NODE_ENV:'production',ALLOWED_ORIGIN:'https://atelon.example'},logger:false});t.after(()=>app.close());
+ for(const url of ['/api/v2/collections','/api/v2/comparisons','/api/v2/chat/threads','/api/v2/account/export']){
+  const response=await app.inject({url,headers:{'x-atelon-session':'forged',authorization:'Bearer forged'}});assert.equal(response.statusCode,401);
+ }
+ assert.equal((await app.inject({method:'DELETE',url:'/api/v2/account'})).statusCode,401);
+ assert.equal((await app.inject('/api/v2/catalogue')).statusCode,200);
+});

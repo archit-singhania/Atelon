@@ -15,7 +15,7 @@ const live = fs
   .map((f) => JSON.parse(fs.readFileSync(path.join(vdir, f), 'utf8')))
   .filter((v) => v.status === 'live');
 
-const pages = ['', '/garage', '/compare', '/ask', '/credits', '/about', '/privacy', '/terms', '/suggest', ...live.map((v) => `/vehicle/${v.slug}`)];
+const pages = ['', '/garage', '/compare', '/ask', '/credits', '/about', '/privacy', '/terms', '/suggest', '/atlas', ...['commands','lab','bay','graph','evidence','rooms','interiors','fit','identify','discovery','director','evolution','sound','dossiers','contribute'].map(tool=>`/atlas/${tool}`), ...live.map((v) => `/vehicle/${v.slug}`)];
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.map((p) => `  <url><loc>${site}${p}</loc></url>`).join('\n')}\n</urlset>\n`;
 
 fs.mkdirSync(pub, { recursive: true });

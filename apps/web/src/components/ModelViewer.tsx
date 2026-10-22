@@ -66,7 +66,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
   const quality = useDeviceTier();
   const metadata = vehicles.find(vehicle => vehicle.model3d?.glb === url)?.model3d;
   const hotspots = suppliedHotspots || metadata?.hotspots || []; const paintMaterials = suppliedPaintMaterials || metadata?.paintMaterials || []; const explodedParts = suppliedParts || metadata?.explodedParts || [];
-  const [active, setActive] = useState(''); const [paint, setPaint] = useState('#8196a8'); const [exploded, setExploded] = useState(false);
+  const [active, setActive] = useState(() => { const id=new URLSearchParams(location.search).get('hotspot')||'';return hotspots.some(hotspot=>hotspot.id===id)?id:''; }); const [paint, setPaint] = useState('#8196a8'); const [exploded, setExploded] = useState(false);
   const [rotate, setRotate] = useState(true);
   const [ready, setReady] = useState(false);
   const [nearby, setNearby] = useState(false);

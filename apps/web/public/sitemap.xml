@@ -9,6 +9,22 @@
   <url><loc>https://atelon.vercel.app/privacy</loc></url>
   <url><loc>https://atelon.vercel.app/terms</loc></url>
   <url><loc>https://atelon.vercel.app/suggest</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/commands</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/lab</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/bay</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/graph</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/evidence</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/rooms</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/interiors</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/fit</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/identify</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/discovery</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/director</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/evolution</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/sound</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/dossiers</loc></url>
+  <url><loc>https://atelon.vercel.app/atlas/contribute</loc></url>
   <url><loc>https://atelon.vercel.app/vehicle/delorean-dmc-12-time-machine</loc></url>
   <url><loc>https://atelon.vercel.app/vehicle/gmc-sierra-1500-at4x</loc></url>
   <url><loc>https://atelon.vercel.app/vehicle/lamborghini-countach-5000qv</loc></url>

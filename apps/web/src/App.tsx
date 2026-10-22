@@ -32,6 +32,7 @@ import { features } from './lib/features';
 import AmbientMotion from './components/AmbientMotion';
 const PosterStudio = lazy(() => import('./pages/PosterStudio'));
 const SpatialBackdrop = lazy(() => import('./components/SpatialBackdrop'));
+const Atlas = lazy(() => import('./features/atlas/Atlas'));
 
 export default function App() {
   const location = useLocation();
@@ -58,6 +59,7 @@ export default function App() {
         <nav>
           <NavLink to="/garage">Garage</NavLink>
           <NavLink to="/compare">Compare</NavLink>
+          <NavLink to="/atlas">Atlas</NavLink>
           <NavLink to="/ask">Ask AI</NavLink>
           <NavLink to="/credits">Credits</NavLink>
           <NavLink to="/about">About</NavLink>
@@ -71,6 +73,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/garage" element={<Garage />} />
+          <Route path="/atlas" element={<Suspense fallback={<p role="status">Preparing atlas…</p>}><Atlas /></Suspense>} />
+          <Route path="/atlas/:feature" element={<Suspense fallback={<p role="status">Preparing workspace…</p>}><Atlas /></Suspense>} />
           <Route path="/vehicle/:slug" element={<><VehicleDetail /><GenerationExplorer /></>} />
           <Route path="/compare" element={<><Compare /><SaveComparison /><ComparisonInsights /><ComparisonShareStudio /></>} />
           <Route path="/ask" element={<Ask />} />
