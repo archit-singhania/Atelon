@@ -1,0 +1,294 @@
+{
+  "browser": "Chrome/155.0.8059.85",
+  "mode": "poster-only, reduced motion, DPR 1",
+  "cases": [
+    {
+      "file": "pearl-phone-garage.png",
+      "theme": "pearl",
+      "width": 390,
+      "height": 844,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "pearl-phone-vehicle.png",
+      "theme": "pearl",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "pearl-phone-story.png",
+      "theme": "pearl",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "pearl-tablet-garage.png",
+      "theme": "pearl",
+      "width": 820,
+      "height": 1180,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "pearl-tablet-vehicle.png",
+      "theme": "pearl",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "pearl-tablet-story.png",
+      "theme": "pearl",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "pearl-desktop-garage.png",
+      "theme": "pearl",
+      "width": 1440,
+      "height": 1000,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "pearl-desktop-vehicle.png",
+      "theme": "pearl",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "pearl-desktop-story.png",
+      "theme": "pearl",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "obsidian-phone-garage.png",
+      "theme": "obsidian",
+      "width": 390,
+      "height": 844,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-phone-vehicle.png",
+      "theme": "obsidian",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-phone-story.png",
+      "theme": "obsidian",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "obsidian-tablet-garage.png",
+      "theme": "obsidian",
+      "width": 820,
+      "height": 1180,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-tablet-vehicle.png",
+      "theme": "obsidian",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-tablet-story.png",
+      "theme": "obsidian",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "obsidian-desktop-garage.png",
+      "theme": "obsidian",
+      "width": 1440,
+      "height": 1000,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-desktop-vehicle.png",
+      "theme": "obsidian",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "obsidian-desktop-story.png",
+      "theme": "obsidian",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "titanium-phone-garage.png",
+      "theme": "titanium",
+      "width": 390,
+      "height": 844,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "titanium-phone-vehicle.png",
+      "theme": "titanium",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "titanium-phone-story.png",
+      "theme": "titanium",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "titanium-tablet-garage.png",
+      "theme": "titanium",
+      "width": 820,
+      "height": 1180,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "titanium-tablet-vehicle.png",
+      "theme": "titanium",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "titanium-tablet-story.png",
+      "theme": "titanium",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "titanium-desktop-garage.png",
+      "theme": "titanium",
+      "width": 1440,
+      "height": 1000,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "titanium-desktop-vehicle.png",
+      "theme": "titanium",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "titanium-desktop-story.png",
+      "theme": "titanium",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "midnight-phone-garage.png",
+      "theme": "midnight",
+      "width": 390,
+      "height": 844,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "midnight-phone-vehicle.png",
+      "theme": "midnight",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "midnight-phone-story.png",
+      "theme": "midnight",
+      "width": 390,
+      "height": 844,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "midnight-tablet-garage.png",
+      "theme": "midnight",
+      "width": 820,
+      "height": 1180,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "midnight-tablet-vehicle.png",
+      "theme": "midnight",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "midnight-tablet-story.png",
+      "theme": "midnight",
+      "width": 820,
+      "height": 1180,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    },
+    {
+      "file": "midnight-desktop-garage.png",
+      "theme": "midnight",
+      "width": 1440,
+      "height": 1000,
+      "route": "/garage",
+      "anchor": null
+    },
+    {
+      "file": "midnight-desktop-vehicle.png",
+      "theme": "midnight",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/porsche-911-930-turbo-1975",
+      "anchor": null
+    },
+    {
+      "file": "midnight-desktop-story.png",
+      "theme": "midnight",
+      "width": 1440,
+      "height": 1000,
+      "route": "/vehicle/plymouth-hemi-cuda-1971",
+      "anchor": "#story"
+    }
+  ]
+}

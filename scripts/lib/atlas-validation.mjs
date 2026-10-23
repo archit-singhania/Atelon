@@ -7,6 +7,7 @@ const uniqueIds=rows=>new Set(rows.map(row=>row?.id)).size===rows.length;
 const localAudio=value=>typeof value==='string'&&/^\/(?!\/)[^\s?#]+\.(mp3|wav|ogg|m4a|webm)$/.test(value)&&!value.split('/').some(part=>part==='..'||part==='.')&&!/%|\\/.test(value);
 export function validateAtlasMetadata(vehicle,knownSlugs){
  const errors=[];const model=vehicle.model3d;
+ if(model?.hotspots!==undefined&&(!Array.isArray(model.hotspots)||model.hotspots.length>30||!uniqueIds(model.hotspots)||model.hotspots.some(h=>!object(h)||!text(h.id)||!text(h.label)||!vector(h.position)||!reviewed(h.review)||!text(h.review.notes)||!text(h.review.modelHash)||!url(h.review.source)||h.review.modelHash!==model.optimizedHash||!vehicle.specs?.some(spec=>spec.key===h.specKey&&spec.source===h.review.source))))errors.push('hotspots require unique finite anchors, dated review, current model hash, notes and a matching sourced specification');
  if(model?.calibration!==undefined){const value=model.calibration;if(!reviewed(value)||!url(value.source)||!vector(value.rotation)||!Number.isFinite(value.metersPerUnit)||value.metersPerUnit<=0)errors.push('calibration requires a positive metre scale, finite rotation, source and dated reviewer');}
  if(model?.interior!==undefined){
    const value=model.interior;

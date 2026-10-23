@@ -16,3 +16,4 @@ Thumbs.db
 apps/web/src/data/vehicles.json
 apps/web/src/data/credits.json
 .qa-v3/
+assets/processed/poster-review/

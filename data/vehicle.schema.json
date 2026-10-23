@@ -22,6 +22,19 @@
           "key": { "type": "string" },
           "value": { "type": ["number", "string", "boolean"] },
           "unit": { "type": "string" },
+          "measurement": {
+            "type": "object",
+            "required": ["kind", "value", "unit", "qualifier", "reviewer", "verifiedAt"],
+            "properties": {
+              "kind": { "enum": ["power", "torque", "weight", "length", "width", "height", "speed"] },
+              "value": { "type": "number", "minimum": 0 },
+              "unit": { "enum": ["kW", "Nm", "kg", "mm", "km/h"] },
+              "qualifier": { "type": "string", "maxLength": 500 },
+              "uncertainty": { "type": "number", "minimum": 0 },
+              "reviewer": { "type": "string", "minLength": 1, "maxLength": 100 },
+              "verifiedAt": { "type": "string", "format": "date" }
+            }
+          },
           "source": { "type": "string", "pattern": "^https?://" }
         }
       }

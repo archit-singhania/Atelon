@@ -20,7 +20,6 @@ import MobileNav from './components/MobileNav';
 import Admin from './pages/Admin';
 import Account from './pages/Account';
 import Research from './pages/Research';
-import AdminEditor from './components/AdminEditor';
 import NavigationMotion from './components/NavigationMotion';
 import CollectionSharing from './components/CollectionSharing';
 import GenerationExplorer from './components/GenerationExplorer';
@@ -85,7 +84,7 @@ export default function App() {
           <Route path="/suggest" element={<Suggest />} />
           <Route path="/design-system" element={<DesignQA />} />
           <Route path="/research" element={<><Research />{!location.search.includes('share=') && <div className="page"><ResearchOrganization /><CollectionSharing /></div>}</>} />
-          {features.catalogueStudio && <Route path="/admin" element={<><Admin /><div className="page"><AdminEditor /></div><ModerationQueue /></>} />}
+          {features.catalogueStudio && <Route path="/admin" element={<><Admin /><ModerationQueue /></>} />}
           {features.accounts && <Route path="/account" element={<Account />} />}
           <Route path="*" element={<NotFound />} />
         </Routes>

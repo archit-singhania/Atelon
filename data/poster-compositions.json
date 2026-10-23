@@ -1,0 +1,11 @@
+{
+ "delorean-dmc-12-time-machine":{"azimuth":0.9,"elevation":0.25,"fill":0.84},
+ "gmc-sierra-1500-at4x":{"zoom":1.18,"azimuth":0.75,"elevation":0.2,"fill":0.83},
+ "lamborghini-countach-5000qv":{"azimuth":1.02,"elevation":0.22,"fill":0.87},
+ "mahindra-thar-4x4":{"azimuth":0.7,"elevation":0.22,"fill":0.84},
+ "mazda-furai":{"azimuth":0.95,"elevation":0.32,"fill":0.85},
+ "nissan-skyline-r34-brians":{"azimuth":0.9,"elevation":0.22,"fill":0.86},
+ "plymouth-hemi-cuda-1971":{"azimuth":1.05,"elevation":0.23,"fill":0.86},
+ "porsche-911-carrera-4s":{"azimuth":0.82,"elevation":0.36,"fill":0.84},
+ "porsche-911-930-turbo-1975":{"zoom":1.85,"azimuth":1.0,"elevation":0.27,"fill":0.85}
+}

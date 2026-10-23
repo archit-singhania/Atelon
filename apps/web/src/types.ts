@@ -1,9 +1,10 @@
 export type Tier = 'full' | 'reference' | 'specs-only';
 export type VehicleStatus = 'draft' | 'researching' | 'license-review' | 'asset-processing' | 'qa' | 'live' | 'rejected';
-export interface ModelHotspot { id: string; label: string; position: [number, number, number]; specKey: string }
+export interface ModelHotspot { id: string; label: string; position: [number, number, number]; specKey: string; review?: { reviewer:string; verifiedAt:string; source:string; modelHash:string; notes:string } }
 export interface ExplodedPart { node: string; offset: [number, number, number] }
 
 export interface Spec {
+  measurement?: {kind:'power'|'torque'|'weight'|'length'|'width'|'height'|'speed';value:number;unit:string;qualifier:string;uncertainty?:number;reviewer:string;verifiedAt:string};
   key: string;
   value: number | string | boolean;
   unit?: string;

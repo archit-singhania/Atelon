@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import http from 'node:http';
+import assert from 'node:assert/strict';
+import puppeteer from 'puppeteer-core';
+const root=path.resolve(import.meta.dirname,'..');const dist=path.join(root,'apps/web/dist');
+const server=http.createServer((req,res)=>{const relative=new URL(req.url,'http://localhost').pathname.slice(1);let file=path.resolve(dist,relative);if(!file.startsWith(dist+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())file=path.join(dist,'index.html');res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.html':'text/html','.webp':'image/webp','.glb':'model/gltf-binary','.woff2':'font/woff2'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).pipe(res);});
+await new Promise(resolve=>server.listen(4184,'127.0.0.1',resolve));let browser;
+try{
+ const executablePath=[process.env.CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(p=>p&&fs.existsSync(p));
+ browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--use-angle=swiftshader','--enable-webgl','--ignore-gpu-blocklist']});
+ const page=await browser.newPage();await page.setViewport({width:1280,height:900});
+ await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
+ await page.goto('http://127.0.0.1:4184/vehicle/mahindra-thar-4x4?speed=0',{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>{document.querySelector('.vehicle-showroom .model-consent button')?.click();return document.querySelector('.vehicle-showroom canvas')&&!document.querySelector('.vehicle-showroom .model-loading');},{timeout:120000});
+ await page.evaluate(()=>window.__originalCanvas=document.querySelector('.vehicle-showroom canvas'));
+ await page.locator('button::-p-text(Rear)').click();await page.waitForFunction(()=>new URL(location.href).searchParams.get('view')==='rear');
+ assert.equal(await page.evaluate(()=>window.__originalCanvas===document.querySelector('.vehicle-showroom canvas')),true,'Camera changes must preserve the renderer');
+ const frames=await page.evaluate(()=>{const capture=progress=>{let pixels=null;dispatchEvent(new CustomEvent('atelon-film-frame',{detail:{url:'/models/mahindra-thar-4x4.glb',from:'hero',to:'side',progress,draw:source=>{const canvas=document.createElement('canvas');canvas.width=160;canvas.height=90;const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0,160,90);pixels=Array.from(ctx.getImageData(0,0,160,90).data);}}}));return pixels;};return [capture(0),capture(1)];});
+ assert.ok(frames[0]?.some(n=>n>0),'Start frame must render');assert.ok(frames[1]?.some(n=>n>0),'End frame must render');assert.notDeepEqual(frames[0],frames[1],'Keyframes must produce distinct model views');
+ fs.mkdirSync(path.join(root,'.qa-v3'),{recursive:true});await page.screenshot({path:path.join(root,'.qa-v3/premium-showroom.png')});
+ console.log('Software-WebGL audit passed: stable canvas across presets and distinct live keyframe renders.');
+ await page.goto('http://127.0.0.1:4184/compare?a=nissan-skyline-r34-brians&b=delorean-dmc-12-time-machine',{waitUntil:'domcontentloaded'});
+ await page.locator('button::-p-text(Load length-calibrated silhouettes)').click();
+ await page.waitForFunction(()=>{const loaded=performance.getEntriesByType('resource').some(r=>r.name.includes('/models/nissan-skyline-r34-brians.glb'));if(!loaded||document.querySelector('.silhouette-loading')){window.__silhouetteStable=0;return false;}window.__silhouetteStable ||= performance.now();return document.querySelector('.silhouette-stage canvas')&&performance.now()-window.__silhouetteStable>1000;},{timeout:120000});
+ await page.$eval('.silhouette-stage',e=>e.scrollIntoView({block:'center'}));
+ await page.screenshot({path:path.join(root,'.qa-v3/reference-silhouettes.png')});
+ await page.goto('http://127.0.0.1:4184/vehicle/plymouth-hemi-cuda-1971',{waitUntil:'domcontentloaded'});await page.waitForSelector('.vehicle-editorial');await page.$eval('.vehicle-editorial',e=>e.scrollIntoView({block:'start'}));
+ await page.screenshot({path:path.join(root,'.qa-v3/editorial-heritage.png')});
+ console.log('Reference silhouette loading and bespoke editorial screenshot checks passed.');
+}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

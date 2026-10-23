@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import puppeteer from 'puppeteer-core';
+import { auditPremium } from './premium-browser-audit.mjs';
 import { auditAtlas } from './atlas-browser-audit.mjs';
 import { buildApp } from '../apps/api/server.js';
 const api = await buildApp({env:{NODE_ENV:'test'},logger:false});
@@ -121,6 +122,7 @@ try {
     const canLose=await page.evaluate(async()=>{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const canvas=document.querySelector('.atlas-scene canvas');const gl=canvas.getContext('webgl2')||canvas.getContext('webgl');const extension=gl?.getExtension('WEBGL_lose_context');extension?.loseContext();return Boolean(extension);});
     if(canLose){await page.waitForSelector('.atlas-scene [role="alert"]');await page.$eval('.atlas-scene .model-consent button',button=>button.click());await page.waitForFunction(()=>Boolean(document.querySelector('.atlas-scene canvas'))&&!document.querySelector('.atlas-scene [role="alert"]'));console.log('WebGL context-loss/restart check passed.');}else failures.push('WebGL test could not access the context-loss extension.');
   }
+  await auditPremium(page,browser);
   await auditAtlas(page);
   if (failures.length) throw new Error(failures.join('\n'));
   console.log('Browser smoke checks passed for 25 routes, Atlas commands, evidence hashes, two-tab room synchronization, appearance persistence, collection creation, imperial conversion, mobile layout, keyboard entry, and PWA manifest. Screenshots saved to .qa-v3.');

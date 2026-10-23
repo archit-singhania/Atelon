@@ -1,3 +1,4 @@
+import { registerObservability } from './src/observability.js';
 import { fileURLToPath } from 'node:url';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
@@ -47,6 +48,7 @@ export async function buildApp({ env = process.env, logger = true } = {}) {
     return { a, b };
   });
   app.post('/api/chat', { config: { rateLimit: { max: Number(env.CHAT_RATE_PER_HOUR || 20), timeWindow: '1 hour' } }, schema: { body: { type: 'object', required: ['question'], properties: { question: { type: 'string', minLength: 1, maxLength: MAX_INPUT } }, additionalProperties: false } } }, async (request) => { const result=await answerQuestion({ vehicles, chain, question: request.body.question.trim(), log: request.log, env }); metrics.aiRequests+=1;if(result.fallback)metrics.aiFallbacks+=1;metrics.providerOutcomes[result.provider]=(metrics.providerOutcomes[result.provider]||0)+1;return result; });
+  registerObservability(app,{store,metrics});
   await registerV2(app, { vehicles, chain, store, env, metrics });
   await registerPlatform(app, { store, vehicles });
   await registerAtlas(app, { store, vehicles, env });

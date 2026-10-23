@@ -1,9 +1,11 @@
+import { signalQuality } from '../lib/telemetry';
 import { Component, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Bounds, Clone, ContactShadows, OrbitControls, Html, useBounds, useGLTF, useProgress } from '@react-three/drei';
 import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import type { ModelHotspot, ExplodedPart } from '../types';
 import { vehicles } from '../lib/data';
+import CameraRig from './CameraRig';
 import ShowroomEnvironment from './ShowroomEnvironment';
 import { reportRenderer, useDeviceTier } from '../lib/useDeviceTier';
 
@@ -33,6 +35,7 @@ function Capture({ url }: { url: string }) { const { gl, scene, camera } = useTh
 
 class ViewerBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
+  componentDidCatch() { signalQuality('model_failure'); }
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? <div className="placeholder"><span>3D preview unavailable</span><small>The showroom poster and sourced specifications remain available.</small></div> : this.props.children; }
 }
@@ -49,6 +52,8 @@ function supportsWebGL() {
 }
 
 interface Props {
+  filmProgress?:number;
+  endPreset?:string;
   url: string;
   poster?: string;
   fullscreenButton?: boolean;
@@ -62,10 +67,10 @@ interface Props {
   explodedParts?: ExplodedPart[];
 }
 
-export default function ModelViewer({ url, poster, fullscreenButton = false, scrollRotate = false, cameraPreset = 'hero', environment = 'studio', lightIntensity = 1, orbitSpeed = 1.2, hotspots: suppliedHotspots, paintMaterials: suppliedPaintMaterials, explodedParts: suppliedParts }: Props) {
+export default function ModelViewer({ filmProgress, endPreset, url, poster, fullscreenButton = false, scrollRotate = false, cameraPreset = 'hero', environment = 'studio', lightIntensity = 1, orbitSpeed = 1.2, hotspots: suppliedHotspots, paintMaterials: suppliedPaintMaterials, explodedParts: suppliedParts }: Props) {
   const quality = useDeviceTier();
-  const metadata = vehicles.find(vehicle => vehicle.model3d?.glb === url)?.model3d;
-  const hotspots = suppliedHotspots || metadata?.hotspots || []; const paintMaterials = suppliedPaintMaterials || metadata?.paintMaterials || []; const explodedParts = suppliedParts || metadata?.explodedParts || [];
+  const vehicle = vehicles.find(vehicle => vehicle.model3d?.glb === url); const metadata = vehicle?.model3d;
+  const hotspots = (suppliedHotspots || metadata?.hotspots || []).filter(item => item.review?.modelHash === metadata?.optimizedHash && Boolean(item.review?.reviewer) && vehicle?.specs.some(spec => spec.key === item.specKey && spec.source === item.review?.source)); const paintMaterials = suppliedPaintMaterials || metadata?.paintMaterials || []; const explodedParts = suppliedParts || metadata?.explodedParts || [];
   const [active, setActive] = useState(() => { const id=new URLSearchParams(location.search).get('hotspot')||'';return hotspots.some(hotspot=>hotspot.id===id)?id:''; }); const [paint, setPaint] = useState('#8196a8'); const [exploded, setExploded] = useState(false);
   const [rotate, setRotate] = useState(true);
   const [ready, setReady] = useState(false);
@@ -98,7 +103,8 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
       {webgl && nearby && deferForDevice && !requested && <div className="model-consent"><button className="btn primary" type="button" onClick={() => setRequested(true)}>Load interactive 3D</button><small>Data Saver or a lower-memory device was detected.</small></div>}
       {webgl && nearby && (!deferForDevice || requested) && <>{!ready && <LoadingStatus />}<ViewerBoundary><Canvas onCreated={({ gl }) => reportRenderer(gl)} frameloop={!visible ? 'never' : reduced || quality === 'low' ? 'demand' : 'always'} camera={{ position: cameraPreset === 'side' ? [5, .8, .2] : cameraPreset === 'detail' ? [2.2, 1.1, 2.2] : [3, 1.5, 4], fov: cameraPreset === 'detail' ? 32 : 40 }} dpr={quality === 'low' ? 1 : quality === 'balanced' ? [1, 1.25] : [1, 1.75]} gl={{ powerPreference: quality === 'high' ? 'high-performance' : 'low-power', antialias: quality === 'high' }} style={{ opacity: ready ? 1 : 0, transition: 'opacity .4s' }}>
         <Suspense fallback={null}>
-          <Bounds fit clip observe margin={1.4}>
+          <Bounds fit clip observe margin={1.4} maxDuration={reduced ? 0 : .75}>
+            <CameraRig preset={cameraPreset} url={url} reduced={reduced} progress={filmProgress} endPreset={endPreset}/>
             <Model url={url} scrollRotate={scrollRotate && !reduced && quality !== 'low'} hotspots={hotspots} active={active} select={id => { setActive(id); setRotate(false); }} paint={paint} paintMaterials={paintMaterials} exploded={exploded} parts={explodedParts} />
           </Bounds>
           {fullscreenButton ? <ShowroomEnvironment url={url} environment={environment} /> : <ContactShadows position={[0, 0, 0]} opacity={0.5} blur={2.5} scale={12} />}
@@ -113,7 +119,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
             makeDefault
             enableDamping
             dampingFactor={0.08}
-            autoRotate={rotate && !reduced && quality !== 'low'}
+            autoRotate={filmProgress === undefined && rotate && !reduced && quality !== 'low'}
             autoRotateSpeed={orbitSpeed}
             minPolarAngle={0.2}
             maxPolarAngle={Math.PI / 2.05}
@@ -126,6 +132,7 @@ export default function ModelViewer({ url, poster, fullscreenButton = false, scr
           Fullscreen
         </button>
       )}
+      {active && hotspots.filter(item=>item.id===active).map(item=><aside key={item.id} className="glass-dense hotspot-source"><strong>{item.label}</strong><p>{String(vehicle?.specs.find(spec=>spec.key===item.specKey)?.value)}</p><p>{item.review?.notes}</p><a href={item.review?.source} target="_blank" rel="noreferrer">Engineering source ↗</a><small>Anchor reviewed {item.review?.verifiedAt} · {item.review?.reviewer}. Reference geometry is not a factory measurement.</small></aside>)}
       {(hotspots.length > 0 || paintMaterials.length > 0 || explodedParts.length > 0) && <div className="model-tools glass-dense">{!!hotspots.length && <label>Engineering focus<select value={active} onChange={e => { setActive(e.target.value); setRotate(false); }}><option value="">Select a highlight</option>{hotspots.map(item => <option key={item.id} value={item.id}>{item.label} · {item.specKey}</option>)}</select></label>}{!!paintMaterials.length && <label>Visual paint preview<input aria-label="Visual paint preview" type="color" value={paint} onChange={e => setPaint(e.target.value)} /></label>}{!!explodedParts.length && <button className="btn ghost" aria-pressed={exploded} onClick={() => setExploded(!exploded)}>Exploded view</button>}</div>}
     </div>
   );

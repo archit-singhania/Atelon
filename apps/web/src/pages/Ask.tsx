@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { askStream, bySlug, vehicles } from '../lib/data';
 import { useSeo } from '../lib/useSeo';
+import AnswerCards from '../components/AnswerCards';
 import VoiceInput from '../components/VoiceInput';
 import { bookmark } from '../lib/research';
 import ChatLibrary from '../components/ChatLibrary';
@@ -23,6 +24,7 @@ export default function Ask() {
   const end = useRef<HTMLDivElement>(null);
   const activeRequest = useRef<AbortController | null>(null);
 
+  useEffect(() => () => activeRequest.current?.abort(), []);
   useEffect(() => { end.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, [messages, slow]);
   useEffect(() => { try { localStorage.setItem('atelon-chat-v1', JSON.stringify(messages.slice(-40))); } catch { /* storage can be unavailable */ } }, [messages]);
   useEffect(() => { const update = () => setOnline(navigator.onLine); addEventListener('online', update); addEventListener('offline', update); return () => { removeEventListener('online', update); removeEventListener('offline', update); }; }, []);
@@ -75,7 +77,7 @@ export default function Ask() {
           <header className="conversation-header">
             <div className="agent-avatar"><img src="/icons/icon-192.png" alt="" /></div>
             <div><h1>Ask Atelon</h1><p><span className="status-dot" /> AI vehicle help desk</p></div>
-            <button className="clear-chat" type="button" onClick={() => { localStorage.removeItem('atelon-chat-v1'); setMessages([{ id: nextId.current++, role: 'assistant', text: 'Conversation cleared. How can I help with your next vehicle question?' }]); }}>New chat</button>
+            <button className="clear-chat" disabled={busy} type="button" onClick={() => { localStorage.removeItem('atelon-chat-v1'); setMessages([{ id: nextId.current++, role: 'assistant', text: 'Conversation cleared. How can I help with your next vehicle question?' }]); }}>New chat</button>
           </header>
 
           <div className="message-log" role="log" aria-live="polite" aria-relevant="additions">
@@ -86,6 +88,7 @@ export default function Ask() {
                 <div className={`message ${message.error ? 'error' : ''}`}>
                   <p>{message.text}</p><div className="message-actions">{message.role === 'assistant' && message.text && <><button onClick={() => bookmark({ title: 'Atelon AI answer', text: message.text, url: '/ask', source: message.reply?.sources[0] })}>Bookmark answer</button>{'speechSynthesis' in window && <><button onClick={() => { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(message.text)); }}>Read aloud</button><button onClick={() => speechSynthesis.cancel()}>Stop audio</button></>}{index > 0 && <button disabled={busy} onClick={() => submit(messages.slice(0,index).reverse().find(item => item.role === 'user')?.text || '')}>Regenerate</button>}</>}{message.role === 'user' && <button disabled={busy} onClick={() => setQ(message.text)}>Edit & resend</button>}</div>
                   {message.reply && <div className="message-meta">{message.reply.fallback ? `Verified-data fallback${message.reply.fallbackReason ? ` · ${message.reply.fallbackReason}` : ''}` : `Answered by ${message.reply.provider}`}</div>}
+                  {message.reply && <AnswerCards slugs={message.reply.matchedVehicles} ask={submit} disabled={busy}/ >}
                   {!!message.reply?.matchedVehicles.length && <div className="vehicle-chips">{message.reply.matchedVehicles.map((slug) => { const vehicle = bySlug(slug); return <Link key={slug} to={`/vehicle/${slug}`}>{vehicle ? `${vehicle.make} ${vehicle.model}` : slug}</Link>; })}</div>}
                   {!!message.reply?.sources.length && <div className="message-sources">Sources {message.reply.sources.map((source) => { const label = (() => { try { return new URL(source).hostname.replace(/^www\./, ''); } catch { return 'Source'; } })(); return <a key={source} href={source} target="_blank" rel="noreferrer">{label} ↗</a>; })}</div>}
                   <div className="message-actions"><button type="button" onClick={() => navigator.clipboard?.writeText(message.text)}>Copy</button>{message.reply && message.reply.matchedVehicles.length >= 2 && <Link to={`/compare?a=${message.reply.matchedVehicles[0]}&b=${message.reply.matchedVehicles[1]}`}>Compare</Link>}{message.retryText && <button type="button" onClick={() => submit(message.retryText)}>Retry</button>}</div>

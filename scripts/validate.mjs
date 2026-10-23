@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { validateAtlasMetadata } from './lib/atlas-validation.mjs';
+import { measurementIssue } from '../shared/measurement.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const vdir = path.join(root, 'data', 'vehicles');
@@ -54,6 +55,7 @@ for (const f of files) {
   if (!Array.isArray(v.years) || v.years.length !== 2) err(f, 'years must be [start, end|null]');
 
   for (const [i, s] of (v.specs || []).entries()) {
+    const issue=measurementIssue(s.measurement);if(issue)err(f,`spec #${i}: ${issue}`);
     if (!s.key || s.value === undefined) err(f, `spec #${i} needs key and value`);
     if (!s.source || !/^https?:\/\//.test(s.source)) err(f, `spec "${s.key}" needs a source URL`);
   }

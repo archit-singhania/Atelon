@@ -1,3 +1,4 @@
+import LiveRoom from '../../components/LiveRoom';
 import { lazy,Suspense,useEffect,useRef,useState } from 'react';
 import { useLocation,useNavigate,useSearchParams } from 'react-router-dom';
 import { API_URL,vehicles,bySlug } from '../../lib/data';
@@ -12,6 +13,7 @@ export default function ResearchRooms(){
   const [params,setParams]=useSearchParams();const location=useLocation();const navigate=useNavigate();
   const raw=params.get('room')||'';const id=/^[a-f0-9-]{36}$/i.test(raw)?raw:'';const local=params.get('mode')==='local';
   const token=new URLSearchParams(location.hash.slice(1)).get('invite')||params.get('invite');
+  const [liveAllowed,setLiveAllowed]=useState(false);
   const [state,setState]=useState<RoomState>(initial);const [invitation,setInvitation]=useState('');const [presenter,setPresenter]=useState(false);const [notes,setNotes]=useState<RoomNote[]>([]);const [text,setText]=useState('');const [notice,setNotice]=useState('');const [following,setFollowing]=useState(true);const [busy,setBusy]=useState(false);
   const channel=useRef<BroadcastChannel|null>(null);const current=useRef({state,notes});current.current={state,notes};
   const follow=useRef(following);follow.current=following;const version=useRef(0);const writing=useRef(false);const currentId=useRef(id);currentId.current=id;
@@ -24,13 +26,13 @@ export default function ResearchRooms(){
     const value={state:next,notes:nextNotes};current.current=value;saveLocal(`atelon-room-${id}`,value);channel.current?.postMessage(value);
   }
   useEffect(()=>{
-    setPresenter(false);setNotes([]);version.current=0;writing.current=false;
+    setLiveAllowed(false);setPresenter(false);setNotes([]);version.current=0;writing.current=false;
     if(!id){setState(initial);return;}
     if(local){
       const key=`atelon-room-${id}`;const saved=readLocal<unknown>(key,{});
       const nextState=record(saved)&&validRoomState(saved.state,slugs)?saved.state:initial;
       const nextNotes=record(saved)?boundedArray(saved.notes,validRoomNote):[];
-      setState(nextState);setNotes(nextNotes);current.current={state:nextState,notes:nextNotes};setPresenter(true);
+      setLiveAllowed(true);setState(nextState);setNotes(nextNotes);current.current={state:nextState,notes:nextNotes};setPresenter(true);
       function receive(value:unknown){
         if(!record(value))return;
         const merged=mergeNotes(current.current.notes,boundedArray(value.notes,validRoomNote));setNotes(merged);
@@ -49,8 +51,8 @@ export default function ResearchRooms(){
       try{const room=await request(`/${id}`,'GET',undefined,controller.signal);if(!active)return;
         if(!validRoomState(room.state,slugs))throw new Error('The room contains an unsupported vehicle view.');
         if(!writing.current){version.current=room.version;if(follow.current)setState(room.state);}
-        setPresenter(room.role==='presenter');setNotes(boundedArray(room.notes,validRoomNote));setNotice('Connected. Vehicle views and the research board refresh automatically.');
-      }catch(error){if(active){setPresenter(false);setNotice((error as Error).message);}}
+        setLiveAllowed(true);setPresenter(room.role==='presenter');setNotes(boundedArray(room.notes,validRoomNote));setNotice('Connected. Vehicle views and the research board refresh automatically.');
+      }catch(error){if(active){setLiveAllowed(false);setPresenter(false);setNotice((error as Error).message);}}
       finally{if(active)timer=setTimeout(refresh,document.hidden?10000:2500);}
     }
     refresh();return()=>{active=false;clearTimeout(timer);controller.abort();};
@@ -88,8 +90,8 @@ export default function ResearchRooms(){
     {id&&<>
       <label><input type="checkbox" checked={following} onChange={event=>setFollowing(event.target.checked)}/> Follow shared view</label>
       <div className="atlas-toolbar"><label>Shared vehicle<select disabled={!presenter||busy} value={state.slug} onChange={event=>publish({...state,slug:event.target.value})}>{vehicles.map(item=><option key={item.slug} value={item.slug}>{vehicleName(item)}</option>)}</select></label><label>Camera preset<select disabled={!presenter||busy} value={state.view} onChange={event=>publish({...state,view:event.target.value as RoomState['view']})}>{['hero','side','detail'].map(view=><option key={view}>{view}</option>)}</select></label></div>
-      <div className="atlas-scene">{vehicle.model3d&&<Suspense fallback={<p>Preparing shared showroom…</p>}><ModelViewer key={`${state.slug}-${state.view}`} url={vehicle.model3d.glb} poster={vehicle.poster} cameraPreset={state.view}/></Suspense>}</div>
-      <h3>Shared research board</h3><div role="log" aria-label="Shared research notes">{notes.map(note=><p key={note.id}>{note.text}</p>)}</div>
+      <div className="atlas-scene">{vehicle.model3d&&<Suspense fallback={<p>Preparing shared showroom…</p>}><ModelViewer key={state.slug} url={vehicle.model3d.glb} poster={vehicle.poster} cameraPreset={state.view} orbitSpeed={0}/></Suspense>}</div>
+      {liveAllowed&&vehicle.model3d&&<LiveRoom id={id} local={local} presenter={presenter} following={following} url={vehicle.model3d.glb}/>}<h3>Shared research board</h3><div role="log" aria-label="Shared research notes">{notes.map(note=><p key={note.id}>{note.text}</p>)}</div>
       <form onSubmit={addNote}><label>Annotation<textarea value={text} maxLength={1000} onChange={event=>setText(event.target.value)}/></label><button className="btn primary" disabled={busy||!text.trim()}>Add to board</button></form>
       {presenter&&!local&&<button className="btn ghost" disabled={busy} onClick={async()=>{setBusy(true);try{await request(`/${id}`,'DELETE');setParams({});setNotice('Room closed; access revoked.');}catch(error){setNotice((error as Error).message);}finally{setBusy(false);}}}>Close room and revoke access</button>}
     </>}

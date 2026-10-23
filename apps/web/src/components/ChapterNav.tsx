@@ -1,0 +1,7 @@
+import { useEffect, useState } from 'react';
+const chapters=[['story','Story'],['specifications','Engineering'],['share-studio','Create'],['related-vehicles','Explore']] as const;
+export default function ChapterNav(){
+ const [active,setActive]=useState('story');const [progress,setProgress]=useState(0);
+ useEffect(()=>{let frame=0;const update=()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{const start=document.getElementById('story');const end=document.getElementById('related-vehicles');if(!start||!end)return;const top=start.getBoundingClientRect().top+scrollY-160;const bottom=end.getBoundingClientRect().bottom+scrollY-innerHeight;setProgress(Math.max(0,Math.min(1,(scrollY-top)/Math.max(1,bottom-top))));let current='story';for(const[id]of chapters){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=180)current=id;}setActive(current);});};update();addEventListener('scroll',update,{passive:true});addEventListener('resize',update);return()=>{cancelAnimationFrame(frame);removeEventListener('scroll',update);removeEventListener('resize',update);};},[]);
+ return <nav className="chapter-nav glass-dense" aria-label="Vehicle chapters"><div>{chapters.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined}>{label}</a>)}</div><div className="chapter-progress" role="progressbar" aria-label="Vehicle story reading progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress*100)}><span style={{transform:`scaleX(${progress})`}}/></div></nav>;
+}
