@@ -10,6 +10,7 @@ try{
  const executablePath=[process.env.CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(p=>p&&fs.existsSync(p));
  browser=await puppeteer.launch({executablePath,headless:true,args:['--no-sandbox','--use-angle=swiftshader','--enable-webgl','--ignore-gpu-blocklist']});
  const page=await browser.newPage();await page.setViewport({width:1280,height:900});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
  await page.goto('http://127.0.0.1:4184/vehicle/mahindra-thar-4x4?speed=0',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>{document.querySelector('.vehicle-showroom .model-consent button')?.click();return document.querySelector('.vehicle-showroom canvas')&&!document.querySelector('.vehicle-showroom .model-loading');},{timeout:120000});
@@ -28,4 +29,13 @@ try{
  await page.goto('http://127.0.0.1:4184/vehicle/plymouth-hemi-cuda-1971',{waitUntil:'domcontentloaded'});await page.waitForSelector('.vehicle-editorial');await page.$eval('.vehicle-editorial',e=>e.scrollIntoView({block:'start'}));
  await page.screenshot({path:path.join(root,'.qa-v3/editorial-heritage.png')});
  console.log('Reference silhouette loading and bespoke editorial screenshot checks passed.');
+ const catalogue=JSON.parse(fs.readFileSync(path.join(root,'apps/web/src/data/vehicles.json'),'utf8'));
+ for(const vehicle of catalogue){
+  await page.goto(`http://127.0.0.1:4184/vehicle/${vehicle.slug}?speed=0`,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>{document.querySelector('.vehicle-showroom .model-consent button')?.click();return document.querySelector('.vehicle-showroom canvas')&&!document.querySelector('.vehicle-showroom .model-loading');},{timeout:120000});
+  const result=await page.evaluate(url=>{let frames=[];for(const progress of [0,1])dispatchEvent(new CustomEvent('atelon-film-frame',{detail:{url,from:'front',to:'side',progress,draw:source=>{const canvas=document.createElement('canvas');canvas.width=160;canvas.height=90;const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0,160,90);frames.push(Array.from(ctx.getImageData(0,0,160,90).data));}}}));return frames;},vehicle.model3d.glb);
+  assert.equal(result.length,2,`${vehicle.slug}: frame capture`);assert.ok(result.every(frame=>frame.some((n,i)=>i%4!==3&&n>10)),`${vehicle.slug}: visible RGB pixels`);assert.notDeepEqual(result[0],result[1],`${vehicle.slug}: distinct camera views`);
+  console.log(`Model rendering passed: ${vehicle.slug}`);
+ }
+ assert.deepEqual(errors,[],'3D pages must not raise browser exceptions');
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

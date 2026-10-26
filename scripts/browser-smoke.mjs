@@ -16,6 +16,7 @@ const web = http.createServer(async (request, response) => {
   const localPath = pathname.replace(/^\/+/, '');
   const candidates = [path.join(dist, localPath), path.join(dist, localPath, 'index.html'), path.join(dist, 'index.html')];
   const file = candidates.find((candidate) => { try { return fs.statSync(candidate).isFile(); } catch { return false; } });
+  if(!file){response.writeHead(503).end('Build unavailable; finish the build before testing.');return;}
   response.setHeader('Content-Type', contentType[path.extname(file || '')] || 'application/octet-stream');
   fs.createReadStream(file).pipe(response);
 });
@@ -42,6 +43,11 @@ try {
     if (!state.title || !state.heading || !state.main || state.overflow) failures.push(`${route} invalid UI state: ${JSON.stringify(state)}`);
   }
   console.log('Checking concierge action');
+  for(const saved of ['{}','null','[null,{"role":"assistant","text":"Recovered","reply":{}}]']){
+    await page.evaluate(saved=>{localStorage.setItem('atelon-chat-v1',saved);localStorage.setItem('atelon-threads-v3','{"invalid":true}');},saved);
+    await page.goto('http://127.0.0.1:4173/ask',{waitUntil:'networkidle0'});await page.waitForSelector('[aria-label="Message Atelon AI"]');
+    await page.locator('button::-p-text(New chat)').click();
+  }
   await page.goto('http://127.0.0.1:4173/atlas/commands', {waitUntil:'networkidle0'});
   await page.$eval('.atlas-panel button.primary',node=>node.scrollIntoView({block:'center',behavior:'instant'}));
   await page.click('.atlas-panel button.primary');
@@ -69,6 +75,8 @@ try {
   await page.waitForSelector('a[download="atelon-story.webm"]',{timeout:30000});
   const film=await page.$eval('a[download="atelon-story.webm"]',async node=>(await(await fetch(node.href)).blob()).size);
   if(film<1000)failures.push('Director exported an empty film.');
+  const playable=await page.$eval('a[download="atelon-story.webm"]',node=>new Promise(resolve=>{const video=document.createElement('video');const timer=setTimeout(()=>resolve(false),10000);video.onloadeddata=()=>{clearTimeout(timer);resolve(video.videoWidth===1280&&video.videoHeight===720);video.removeAttribute('src');video.load();};video.onerror=()=>{clearTimeout(timer);resolve(false);};video.src=node.href;video.load();}));
+  if(!playable)failures.push('Director film cannot decode as a 1280×720 video.');
   await page.goto('http://127.0.0.1:4173/ask', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => { document.body.tabIndex = -1; document.body.focus(); });
   await page.keyboard.press('Tab');

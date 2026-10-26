@@ -7,8 +7,7 @@ import VoiceInput from '../components/VoiceInput';
 import { bookmark } from '../lib/research';
 import ChatLibrary from '../components/ChatLibrary';
 
-interface Reply { answer: string; provider: string; sources: string[]; matchedVehicles: string[]; fallback: boolean; fallbackReason?: string | null; retryable?: boolean; attemptedProviders?: string[] }
-interface Message { id: number; role: 'assistant' | 'user'; text: string; reply?: Reply; error?: boolean; retryText?: string }
+import { normalizeMessages, type Message, type Reply } from '../lib/chatState';
 
 const welcome: Message = { id: 1, role: 'assistant', text: 'Hi, I’m Atelon AI. I can help you explore vehicles, compare verified specifications, and explain each 3D confidence tier. What would you like to know?' };
 const suggestions = [`Tell me about the ${vehicles[0].make} ${vehicles[0].model}`, `Compare the ${vehicles[1].make} ${vehicles[1].model} and ${vehicles[2].make} ${vehicles[2].model}`, 'How do Full 3D and Reference 3D differ?'];
@@ -18,7 +17,7 @@ export default function Ask() {
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const [slow, setSlow] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(() => { try { const saved = localStorage.getItem('atelon-chat-v1'); return saved ? JSON.parse(saved) : [welcome]; } catch { return [welcome]; } });
+  const [messages, setMessages] = useState<Message[]>(() => { try { const saved = localStorage.getItem('atelon-chat-v1'); const restored=normalizeMessages(saved ? JSON.parse(saved) : null); return restored.length ? restored : [welcome]; } catch { return [welcome]; } });
   const nextId = useRef(Math.max(1, ...messages.map((message) => message.id)) + 1);
   const [online, setOnline] = useState(() => navigator.onLine);
   const end = useRef<HTMLDivElement>(null);
@@ -36,7 +35,7 @@ export default function Ask() {
 
   async function submit(text = q) {
     const question = text.trim();
-    if (!question || busy) return;
+    if (!question || busy || !online) return;
     setMessages((items) => [...items, { id: nextId.current++, role: 'user', text: question }]);
     setQ(''); setBusy(true);
     const messageId = nextId.current++;
@@ -69,7 +68,7 @@ export default function Ask() {
             <a href="/compare">Compare vehicles <span>›</span></a>
             <a href="/credits">Model licences <span>›</span></a>
           </nav>
-          <ChatLibrary messages={messages} disabled={busy} restore={items => { setMessages(items); nextId.current = Math.max(1, ...items.map(item => item.id)) + 1; }} />
+          <ChatLibrary messages={messages} disabled={busy} restore={items => { const restored=normalizeMessages(items);setMessages(restored.length?restored:[welcome]); nextId.current = Math.max(1, ...restored.map(item => item.id)) + 1; }} />
           <div className="support-trust"><span className="status-dot" />Grounded in verified Garage data</div>
         </aside>
 
@@ -77,7 +76,7 @@ export default function Ask() {
           <header className="conversation-header">
             <div className="agent-avatar"><img src="/icons/icon-192.png" alt="" /></div>
             <div><h1>Ask Atelon</h1><p><span className="status-dot" /> AI vehicle help desk</p></div>
-            <button className="clear-chat" disabled={busy} type="button" onClick={() => { localStorage.removeItem('atelon-chat-v1'); setMessages([{ id: nextId.current++, role: 'assistant', text: 'Conversation cleared. How can I help with your next vehicle question?' }]); }}>New chat</button>
+            <button className="clear-chat" disabled={busy} type="button" onClick={() => { try { localStorage.removeItem('atelon-chat-v1'); } catch {} setMessages([{ id: nextId.current++, role: 'assistant', text: 'Conversation cleared. How can I help with your next vehicle question?' }]); }}>New chat</button>
           </header>
 
           <div className="message-log" role="log" aria-live="polite" aria-relevant="additions">
