@@ -1,8 +1,16 @@
 import { MAX_INPUT, answerQuestion } from './chat.js';
+import { registerGarageSync } from './garage-sync.js';
+import { registerAccountDeletion } from './account-deletion.js';
+import { registerCollectionSharing } from './collection-sharing.js';
+import { registerCollectionSync } from './collection-sync.js';
 
 const collectionBody = { type: 'object', required: ['name'], properties: { name: { type: 'string', minLength: 1, maxLength: 80 }, visibility: { enum: ['private', 'unlisted', 'public'] }, vehicle_slugs: { type: 'array', maxItems: 200, items: { type: 'string', maxLength: 100 } }, notes: { type: 'string', maxLength: 2000 } }, additionalProperties: false };
 export async function registerV2(app, { vehicles, chain, store, env, metrics }) {
   app.addHook('preHandler', async (request) => { request.user = await store.userFromRequest(request); });
+  await registerGarageSync(app,{store,vehicles,env});
+  await registerAccountDeletion(app,{store,env});
+  await registerCollectionSharing(app,{store,env});
+  await registerCollectionSync(app,{store,env,vehicles});
   app.get('/api/v2/me', async (request) => ({ user: request.user ? { id: request.user.id, email: request.user.email ?? null } : null, persistence: store.mode }));
   app.get('/api/v2/catalogue', { schema: { querystring: { type: 'object', properties: { cursor: { type: 'string', pattern: '^\\d+$' }, limit: { type: 'string', pattern: '^([1-9]|[1-4]\\d|50)$' } }, additionalProperties: false } } }, async (request) => { const cursor = Number(request.query.cursor || 0); const limit = Number(request.query.limit || 20); return { results: vehicles.slice(cursor, cursor + limit), nextCursor: cursor + limit < vehicles.length ? cursor + limit : null }; });
   const privateData=async request=>{const developmentSession=env.NODE_ENV!=='production'&&store.mode==='local'&&typeof request.headers['x-atelon-session']==='string'&&request.headers['x-atelon-session'].length>0&&request.headers['x-atelon-session'].length<=128;if(!request.user&&!developmentSession)throw Object.assign(new Error('Sign in to access private application data.'),{statusCode:401});if(env.NODE_ENV==='production'&&store.mode!=='supabase')throw Object.assign(new Error('Cloud persistence is not configured.'),{statusCode:503});};

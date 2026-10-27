@@ -1,0 +1,15 @@
+export type GarageDocument={name:string;notes:string;vehicle_slugs:string[]};
+export type GarageRecord=GarageDocument&{id:string;revision:number};
+export type GarageOperation={operationId:string;expectedRevision:number;document:GarageDocument;preserveConflict?:boolean};
+export type GarageQueue={version:1;owner:string;sequence:number;base:GarageRecord|null;pending:GarageOperation|null;lastSync:string|null};
+function validDocument(v:unknown):v is GarageDocument{if(!v||typeof v!=='object')return false;const d=v as GarageDocument;return typeof d.name==='string'&&d.name.length>0&&d.name.length<=80&&typeof d.notes==='string'&&d.notes.length<=2000&&Array.isArray(d.vehicle_slugs)&&d.vehicle_slugs.length<=200&&d.vehicle_slugs.every(s=>typeof s==='string'&&/^[a-z0-9-]+$/.test(s));}
+export function readQueueValue(value:unknown,owner:string):GarageQueue{
+ const empty:GarageQueue={version:1,owner,sequence:0,base:null,pending:null,lastSync:null};if(!value||typeof value!=='object')return empty;
+ const v=value as GarageQueue;if(v.version!==1||v.owner!==owner)return empty;
+ const base=v.base&&validDocument(v.base)&&typeof v.base.id==='string'&&Number.isInteger(v.base.revision)&&v.base.revision>0?v.base:null;
+ const p=v.pending;const pending=p&&validDocument(p.document)&&typeof p.operationId==='string'&&/^[0-9a-f-]{36}$/.test(p.operationId)&&Number.isInteger(p.expectedRevision)&&p.expectedRevision>=0&&[undefined,false,true].includes(p.preserveConflict)?p:null;
+ return{...empty,sequence:Number.isSafeInteger(v.sequence)&&v.sequence>=0?v.sequence:0,base,pending,lastSync:typeof v.lastSync==='string'?v.lastSync:null};
+}
+function database():Promise<IDBDatabase>{return new Promise((resolve,reject)=>{const r=indexedDB.open('atelon-sync',1);r.onupgradeneeded=()=>r.result.createObjectStore('garages',{keyPath:'owner'});r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.onblocked=()=>reject(Error('Close older Atelon tabs to unlock local sync storage.'));});}
+export async function loadGarageQueue(owner:string){const db=await database();try{return await new Promise<GarageQueue>((resolve,reject)=>{const r=db.transaction('garages').objectStore('garages').get(owner);r.onsuccess=()=>resolve(readQueueValue(r.result,owner));r.onerror=()=>reject(r.error);});}finally{db.close();}}
+export async function saveGarageQueue(state:GarageQueue):Promise<GarageQueue>{const db=await database();try{return await new Promise((resolve,reject)=>{const tx=db.transaction('garages','readwrite');const store=tx.objectStore('garages');const read=store.get(state.owner);const next={...state,sequence:state.sequence+1};let conflict=false;read.onsuccess=()=>{if(readQueueValue(read.result,state.owner).sequence!==state.sequence){conflict=true;tx.abort();return;}store.put(next);};tx.oncomplete=()=>resolve(next);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(conflict?Error('Another tab changed this queue. Reload before syncing; its pending changes were preserved.'):tx.error||Error('Sync queue could not be saved.'));});}finally{db.close();}}

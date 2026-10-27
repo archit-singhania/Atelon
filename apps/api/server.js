@@ -16,7 +16,7 @@ export async function buildApp({ env = process.env, logger = true } = {}) {
   validateEnv(env);
   if (env.NODE_ENV === 'production' && (!env.ALLOWED_ORIGIN || /localhost|127\.0\.0\.1/.test(env.ALLOWED_ORIGIN))) throw new Error('Production requires ALLOWED_ORIGIN with the public web origin.');
   const app = Fastify({ bodyLimit: 16 * 1024, ajv: { customOptions: { coerceTypes: false, removeAdditional: false } }, logger: logger ? { serializers: {
-    req(request) { return { id: request.id, method: request.method, url: request.url }; },
+    req(request) { return { id: request.id, method: request.method, url: request.url.replace(/(\/api\/v2\/shared\/collections\/)[^/?]+/, '$1[redacted]') }; },
     res(reply) { return { statusCode: reply.statusCode }; }
   } } : false });
   const vehicles = loadVehicles();

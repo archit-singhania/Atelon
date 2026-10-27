@@ -1,0 +1,9 @@
+import {spawn} from 'node:child_process';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const checks=[['Repository, build and budgets','npm',['run','verify']],['Grounded fallback evaluation','npm',['run','eval:chat']],['Garage sync browser tests',process.execPath,['scripts/garage-browser-audit.mjs']],['Application browser regression','npm',['run','test:browser']]];
+if(process.argv.includes('--webgl'))checks.push(['Nine-model WebGL audit',process.execPath,['scripts/camera-browser-audit.mjs']]);
+if(process.argv.includes('--visual'))checks.push(['Visual baseline comparison',process.execPath,['scripts/visual-baselines.mjs']]);
+const report={startedAt:new Date().toISOString(),checks:[],notCovered:['Hosted Supabase/auth/storage/RLS','Physical devices and native AR','Missing reviewed content','Admin flag-on preview','Independent security/accessibility audit']};
+try{for(const [label,command,args]of checks){console.log(`\n${label}`);const started=Date.now();const code=await new Promise((resolve,reject)=>{if(command==='npm'&&!process.env.npm_execpath){reject(Error('Run this pipeline using npm run verify:platform.'));return;}const child=spawn(command==='npm'?process.execPath:command,command==='npm'?[process.env.npm_execpath,...args]:args,{cwd:root,stdio:'inherit'});child.once('error',reject);child.once('exit',code=>resolve(code??1));});report.checks.push({label,passed:code===0,durationMs:Date.now()-started});if(code!==0){process.exitCode=1;break;}}}catch(error){report.error=error.message;process.exitCode=1;}finally{report.finishedAt=new Date().toISOString();await fs.mkdir(path.join(root,'.qa-v3'),{recursive:true});await fs.writeFile(path.join(root,'.qa-v3/platform-verification.json'),JSON.stringify(report,null,2)+'\n');}

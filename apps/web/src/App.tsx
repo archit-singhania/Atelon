@@ -19,6 +19,7 @@ import CommandPalette from './components/CommandPalette';
 import MobileNav from './components/MobileNav';
 import Admin from './pages/Admin';
 import Account from './pages/Account';
+import SharedCollection from './pages/SharedCollection';
 import Research from './pages/Research';
 import NavigationMotion from './components/NavigationMotion';
 import CollectionSharing from './components/CollectionSharing';
@@ -77,6 +78,7 @@ export default function App() {
           <Route path="/vehicle/:slug" element={<><VehicleDetail /><GenerationExplorer /></>} />
           <Route path="/compare" element={<><Compare /><SaveComparison /><ComparisonInsights /><ComparisonShareStudio /></>} />
           <Route path="/ask" element={<Ask />} />
+          <Route path="/shared/collection" element={<SharedCollection />} />
           <Route path="/credits" element={<Credits />} />
           <Route path="/about" element={<About />} />
           <Route path="/privacy" element={<Privacy />} />
