@@ -19,20 +19,23 @@ Implemented:
 - Revocable read-only cloud collection snapshots with hashed tokens, explicit note inclusion, replacement/revocation controls and a shared-view route. Migration 009 remains unapplied. Already downloaded copies cannot be revoked.
 - Named collection sync reuses the durable queue, revision conflicts and save-both behavior. Migration 010 remains unapplied. Each open collection resumes its own queue; this is not an always-running background sync service. Existing local Research collections are not automatically imported.
 
+Research import increment (29 October 2026): explicit preview and confirmation now queue a private named collection, with a local backup and stable account-specific import identity. Per-vehicle notes are retained as reversible labelled JSON in the existing Notes field. Notes exceeding 2,000 characters and invalid/unavailable vehicle references are rejected without partial import. Original Research collections remain unchanged; repeated imports open the existing queue rather than overwrite it.
+
 Remaining before Milestone A is complete:
 - Hosted migration/RLS/multi-account tests and restore rehearsal.
 - Hosted verification of named sync, revocable sharing and full-identity deletion, including storage-ownership failures and retry after an interrupted deletion response. Existing URL-encoded local snapshots remain non-revocable.
-- Rich per-vehicle note import from local Research collections into the simpler cloud collection record; background sync beyond an open collection.
+- Structured per-vehicle note editing in cloud collections and imports exceeding the current Notes limit; background sync beyond an open collection.
 - Export of uploaded assets and administrative authorship records, plus a hosted export audit.
 - Preview feature-flag testing and automated accessibility scans.
 
 ## Other workstreams
 
-### Local verification — 27 October 2026
+### Local verification — 29 October 2026
 
-`npm.cmd run verify:platform` completed successfully after the deletion, named sync and sharing changes:
+`npm.cmd run verify:platform` completed successfully after the reviewed Research import changes:
 
-- 51 automated tests and strict validation of nine vehicle records.
+- 54 automated tests and strict validation of nine vehicle records.
+- Research import browser checks: explicit confirmation, preserved note associations, unchanged local source, saved backup and no duplicates on repeat import.
 - TypeScript, production build, release artifact and performance-budget checks.
 - 159 deterministic fallback AI cases; this is not a live-provider accuracy score.
 - Real-component Garage/export browser checks, including session expiry, lost successful replies, persistence, conflict decisions and account isolation. Named collection offline reload/reconnect, sharing/revocation controls and deletion confirmation/disabled-state behavior also pass. Successful Auth deletion is covered with a stubbed provider only.
